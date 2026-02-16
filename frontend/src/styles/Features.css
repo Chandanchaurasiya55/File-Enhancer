@@ -1,0 +1,154 @@
+/* Features Showcase */
+.features-showcase {
+  position: relative;
+  z-index: 1;
+  padding: 8rem 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: var(--white);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3.5rem;
+  margin-top: 5rem;
+}
+
+.feature-item {
+  display: flex;
+  gap: 2.5rem;
+  align-items: flex-start;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 2rem;
+  border-radius: 12px;
+  background: var(--light-gray);
+}
+
+.feature-item:hover {
+  background: rgba(37, 99, 235, 0.05);
+  transform: translateY(0);
+}
+
+.feature-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.feature-number {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  min-width: 70px;
+  flex-shrink: 0;
+}
+
+.feature-content h3 {
+  font-size: 1.5rem;
+  color: var(--text);
+  margin-bottom: 0.8rem;
+  text-transform: capitalize;
+  font-weight: 600;
+}
+
+.feature-content p {
+  color: var(--dark-gray);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.section-title.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .features-showcase {
+    padding: 6rem 2rem;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .feature-item {
+    gap: 2rem;
+    padding: 1.8rem;
+  }
+
+  .feature-number {
+    font-size: 3rem;
+    min-width: 60px;
+  }
+
+  .feature-content h3 {
+    font-size: 1.3rem;
+  }
+
+  .feature-content p {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .features-showcase {
+    padding: 4rem 1.5rem;
+  }
+
+  .features-grid {
+    gap: 1.8rem;
+  }
+
+  .feature-item {
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .feature-number {
+    font-size: 2.5rem;
+    min-width: 50px;
+  }
+
+  .feature-content h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .feature-content p {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .features-showcase {
+    padding: 2.5rem 1rem;
+  }
+
+  .features-grid {
+    gap: 1.2rem;
+  }
+
+  .feature-item {
+    gap: 1rem;
+    padding: 1.2rem;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .feature-number {
+    font-size: 2rem;
+    min-width: auto;
+  }
+
+  .feature-content h3 {
+    font-size: 1.1rem;
+  }
+
+  .feature-content p {
+    font-size: 0.8rem;
+  }
+}
