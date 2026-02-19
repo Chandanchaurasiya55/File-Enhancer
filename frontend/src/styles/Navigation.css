@@ -15,16 +15,17 @@
   animation: navSlide 0.6s ease-out;
 }
 
-.btn-premium{
+.btn-premium {
   background-color: #a90006;
 }
 
 @keyframes navSlide {
-  from { 
+  from {
     transform: translateY(-100%);
     opacity: 0;
   }
-  to { 
+
+  to {
     transform: translateY(0);
     opacity: 1;
   }
@@ -83,6 +84,13 @@
 
 .nav-link:hover::before {
   width: 100%;
+}
+
+.nav-user {
+  color: var(--dark-gray);
+  font-size: 1rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .btn-login {
