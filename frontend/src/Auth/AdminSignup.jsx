@@ -79,9 +79,9 @@ const AdminSignup = () => {
 
     return (
         <div className="auth-container">
-            <div className="auth-box admin-auth">
+            <div className="auth-box">
                 <div className="auth-header">
-                    <h2>Admin Sign Up</h2>
+                    <h2>Admin Registration</h2>
                     <p>Create admin account</p>
                 </div>
 
@@ -133,17 +133,31 @@ const AdminSignup = () => {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="email">Email</label>
+                        <label htmlFor="email">Email Address</label>
                         <input
                             type="email"
                             id="email"
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            placeholder="admin@example.com"
+                            placeholder="your@email.com"
                             className={errors.email ? 'error' : ''}
                         />
                         {errors.email && <span className="error-text">{errors.email}</span>}
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="adminSecret">Admin Code</label>
+                        <input
+                            type="password"
+                            id="adminSecret"
+                            name="adminSecret"
+                            value={formData.adminSecret}
+                            onChange={handleChange}
+                            placeholder="Enter admin registration code"
+                            className={errors.adminSecret ? 'error' : ''}
+                        />
+                        {errors.adminSecret && <span className="error-text">{errors.adminSecret}</span>}
                     </div>
 
                     <div className="form-group">
@@ -174,37 +188,17 @@ const AdminSignup = () => {
                         {errors.confirmPassword && <span className="error-text">{errors.confirmPassword}</span>}
                     </div>
 
-                    <div className="form-group">
-                        <label htmlFor="adminSecret">Admin Registration Code</label>
-                        <input
-                            type="password"
-                            id="adminSecret"
-                            name="adminSecret"
-                            value={formData.adminSecret}
-                            onChange={handleChange}
-                            placeholder="Enter admin code"
-                            className={errors.adminSecret ? 'error' : ''}
-                        />
-                        {errors.adminSecret && <span className="error-text">{errors.adminSecret}</span>}
-                    </div>
-
                     <button
                         type="submit"
-                        className="submit-btn admin-btn"
+                        className="submit-btn"
                         disabled={submitting}
                     >
-                        {submitting ? 'Creating Admin Account...' : 'Sign Up as Admin'}
+                        {submitting ? 'Creating Account...' : 'Sign Up'}
                     </button>
                 </form>
 
                 <p className="auth-footer">
-                    Already have an account? <Link to="/admin/login">Login here</Link>
-                </p>
-
-                <div className="auth-divider">or</div>
-
-                <p className="auth-footer">
-                    Are you a user? <Link to="/user/signup">Sign up as User</Link>
+                    Already have an admin account? <Link to="/admin/login">Login here</Link>
                 </p>
             </div>
         </div>

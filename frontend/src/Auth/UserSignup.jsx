@@ -23,7 +23,6 @@ const UserSignup = () => {
             ...prev,
             [name]: value
         }));
-        // Clear error for this field
         if (errors[name]) {
             setErrors(prev => ({
                 ...prev,
@@ -79,7 +78,7 @@ const UserSignup = () => {
         <div className="auth-container">
             <div className="auth-box">
                 <div className="auth-header">
-                    <h2>User Sign Up</h2>
+                    <h2>Get Started</h2>
                     <p>Create your account</p>
                 </div>
 
@@ -131,14 +130,14 @@ const UserSignup = () => {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="email">Email</label>
+                        <label htmlFor="email">Email Address</label>
                         <input
                             type="email"
                             id="email"
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            placeholder="john@example.com"
+                            placeholder="your@email.com"
                             className={errors.email ? 'error' : ''}
                         />
                         {errors.email && <span className="error-text">{errors.email}</span>}
@@ -183,12 +182,6 @@ const UserSignup = () => {
 
                 <p className="auth-footer">
                     Already have an account? <Link to="/user/login">Login here</Link>
-                </p>
-
-                <div className="auth-divider">or</div>
-
-                <p className="auth-footer">
-                    Are you an admin? <Link to="/admin/signup">Sign up as Admin</Link>
                 </p>
             </div>
         </div>

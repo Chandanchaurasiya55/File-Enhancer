@@ -60,24 +60,24 @@ const AdminLogin = () => {
 
     return (
         <div className="auth-container">
-            <div className="auth-box admin-auth">
+            <div className="auth-box">
                 <div className="auth-header">
-                    <h2>Admin Login</h2>
-                    <p>Welcome back, Admin</p>
+                    <h2>Admin Access</h2>
+                    <p>Secure admin login</p>
                 </div>
 
                 {errors.submit && <div className="error-banner">{errors.submit}</div>}
 
                 <form onSubmit={handleSubmit} className="auth-form">
                     <div className="form-group">
-                        <label htmlFor="email">Email</label>
+                        <label htmlFor="email">Email Address</label>
                         <input
                             type="email"
                             id="email"
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            placeholder="admin@example.com"
+                            placeholder="admin@email.com"
                             className={errors.email ? 'error' : ''}
                         />
                         {errors.email && <span className="error-text">{errors.email}</span>}
@@ -99,21 +99,21 @@ const AdminLogin = () => {
 
                     <button
                         type="submit"
-                        className="submit-btn admin-btn"
+                        className="submit-btn"
                         disabled={submitting}
                     >
-                        {submitting ? 'Logging in...' : 'Admin Login'}
+                        {submitting ? 'Logging In...' : 'Login'}
                     </button>
                 </form>
 
                 <p className="auth-footer">
-                    Don't have an account? <Link to="/admin/signup">Sign up here</Link>
+                    Don't have an admin account? <Link to="/admin/signup">Sign up here</Link>
                 </p>
 
                 <div className="auth-divider">or</div>
 
                 <p className="auth-footer">
-                    Are you a user? <Link to="/user/login">Login as User</Link>
+                    Regular user? <Link to="/user/login">Login as User</Link>
                 </p>
             </div>
         </div>

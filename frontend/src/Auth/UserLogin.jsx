@@ -62,22 +62,22 @@ const UserLogin = () => {
         <div className="auth-container">
             <div className="auth-box">
                 <div className="auth-header">
-                    <h2>User Login</h2>
-                    <p>Welcome back</p>
+                    <h2>Welcome Back</h2>
+                    <p>Continue to your account</p>
                 </div>
 
                 {errors.submit && <div className="error-banner">{errors.submit}</div>}
 
                 <form onSubmit={handleSubmit} className="auth-form">
                     <div className="form-group">
-                        <label htmlFor="email">Email</label>
+                        <label htmlFor="email">Email Address</label>
                         <input
                             type="email"
                             id="email"
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            placeholder="john@example.com"
+                            placeholder="Enter your email"
                             className={errors.email ? 'error' : ''}
                         />
                         {errors.email && <span className="error-text">{errors.email}</span>}
@@ -91,7 +91,7 @@ const UserLogin = () => {
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
-                            placeholder="••••••••"
+                            placeholder="Enter your password"
                             className={errors.password ? 'error' : ''}
                         />
                         {errors.password && <span className="error-text">{errors.password}</span>}
@@ -102,18 +102,18 @@ const UserLogin = () => {
                         className="submit-btn"
                         disabled={submitting}
                     >
-                        {submitting ? 'Logging in...' : 'Login'}
+                        {submitting ? 'Logging in...' : 'Sign In'}
                     </button>
                 </form>
 
                 <p className="auth-footer">
-                    Don't have an account? <Link to="/user/signup">Sign up here</Link>
+                    Don't have an account? <Link to="/user/signup">Create one</Link>
                 </p>
 
                 <div className="auth-divider">or</div>
 
                 <p className="auth-footer">
-                    Are you an admin? <Link to="/admin/login">Login as Admin</Link>
+                    <Link to="/admin/login">Sign in as Admin</Link>
                 </p>
             </div>
         </div>
