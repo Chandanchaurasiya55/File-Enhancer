@@ -80,10 +80,25 @@
 
 .auth-header {
     text-align: center;
-    margin-bottom: 18px;
-    animation: fadeIn 0.8s ease-out 0.1s both;
+       animation: fadeIn 0.8s ease-out 0.1s both;
     padding-bottom: 12px;
     border-bottom: 2px solid #f0f0f0;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+    height: 90%;
+}
+
+.header-emoji {
+    width: 65px;
+    height: 65px;
+    margin-left: 2rem;
+    border-radius: 50%;
+    background-color: #969393;
 }
 
 @keyframes fadeIn {
@@ -96,10 +111,19 @@
     }
 }
 
+.ad-emoji {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    background-color: #969393;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+
 .auth-header h2 {
     color: #1a1a1a;
-    font-size: 24px;
-    margin: 0 0 4px 0;
+    font-size: 28px;
+    margin: 0;
     font-weight: 700;
     letter-spacing: -0.5px;
 }
@@ -120,12 +144,13 @@
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: 16px;
     width: 100%;
 }
 
 .form-group {
-    margin-bottom: 12px;
+    margin-bottom: 20px;
+    margin-top: 20px;
     display: flex;
     flex-direction: column;
     animation: fadeInUp 0.6s ease-out backwards;
@@ -171,10 +196,10 @@
 }
 
 .form-group label {
-    font-size: 11px;
+    font-size: 14px;
     font-weight: 700;
     color: #1a1a1a;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
     display: block;
     text-transform: uppercase;
     letter-spacing: 0.7px;
@@ -182,10 +207,10 @@
 }
 
 .form-group input {
-    padding: 8px 10px;
+    padding: 9px 9px;
     border: 2px solid #e9ecef;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 16px;
     font-family: inherit;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     background-color: #f8f9fa;
@@ -208,20 +233,20 @@
 }
 
 .form-group input.error {
-    border-color: #dc3545;
+    border-color: #a90006;
     background-color: #fff5f5;
 }
 
 .form-group input.error:focus {
-    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+    box-shadow: 0 0 0 3px rgba(169, 0, 6, 0.1);
 }
 
 .error-text {
-    color: #dc3545;
+    color: #a90006;
     font-size: 12px;
-    margin-top: 6px;
+    margin-top: 4px;
     display: block;
-    font-weight: 600;
+    font-weight: 400;
     letter-spacing: 0.2px;
 }
 
@@ -308,9 +333,9 @@
 /* Footer Styles */
 .auth-footer {
     text-align: center;
-    font-size: 11px;
+    font-size: 14px;
     color: #495057;
-    margin: 8px 0;
+    margin: 8px 0 0 0;
     animation: fadeInUp 0.6s ease-out 0.5s both;
     letter-spacing: 0.2px;
 }
@@ -322,6 +347,7 @@
     transition: all 0.3s ease;
     position: relative;
     padding-bottom: 2px;
+    font-size: 1rem;
 }
 
 .auth-footer a::after {

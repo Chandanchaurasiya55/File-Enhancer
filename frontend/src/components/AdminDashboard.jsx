@@ -1,32 +1,26 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../styles/Dashboard.css';
 
 const AdminDashboard = () => {
+    const navigate = useNavigate();
     const { user, logout } = useAuth();
-    const [stats, setStats] = useState({
+    const [stats] = useState({
         totalUsers: 0,
         totalAdmins: 0,
         totalFiles: 0
     });
 
     useEffect(() => {
-        // Fetch dashboard stats
-        fetchStats();
-    }, []);
-
-    const fetchStats = async () => {
-        // This would be replaced with actual API calls
-        setStats({
-            totalUsers: 0,
-            totalAdmins: 0,
-            totalFiles: 0
-        });
-    };
+        if (!user || user.role !== 'admin') {
+            navigate('/admin/login');
+        }
+    }, [user, navigate]);
 
     const handleLogout = async () => {
         await logout();
-        window.location.href = '/admin/login';
+        navigate('/');
     };
 
     return (
@@ -38,9 +32,9 @@ const AdminDashboard = () => {
 
             <div className="dashboard-content">
                 <div className="welcome-section">
-                    <h1>Welcome, {user?.firstname} {user?.lastname}!</h1>
-                    <p>Role: {user?.role}</p>
-                    <p>Email: {user?.email}</p>
+                    <h1>Welcome, {user?.Fullname}! 👋</h1>
+                    <p><strong>Role:</strong> {user?.role}</p>
+                    <p><strong>Email:</strong> {user?.Email}</p>
                 </div>
 
                 <div className="stats-section">

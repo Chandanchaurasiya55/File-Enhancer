@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../styles/Auth.css';
+import emoji from'../assets/emoji.png';
 
 const AdminLogin = () => {
     const [formData, setFormData] = useState({
-        email: '',
-        password: ''
+        Email: '',
+        Password: ''
     });
     const [submitting, setSubmitting] = useState(false);
     const [errors, setErrors] = useState({});
@@ -30,10 +31,11 @@ const AdminLogin = () => {
     const validateForm = () => {
         const newErrors = {};
 
-        if (!formData.email.trim()) newErrors.email = 'Email is required';
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Invalid email format';
+        if (!formData.Email.trim()) newErrors.Email = 'Email is required';
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.Email)) newErrors.Email = 'Invalid email format';
 
-        if (!formData.password) newErrors.password = 'Password is required';
+        if (!formData.Password) newErrors.Password = 'Password is required';
+        if (formData.Password.length < 8) newErrors.Password = 'Password must be at least 8 characters';
 
         return newErrors;
     };
@@ -62,39 +64,41 @@ const AdminLogin = () => {
         <div className="auth-container">
             <div className="auth-box">
                 <div className="auth-header">
-                    <h2>Admin Access</h2>
-                    <p>Secure admin login</p>
+                    <div className="header-content">
+                        <img src={emoji} alt="Admin Emoji" className="header-emoji" />
+                        <h2>Admin Access</h2>
+                    </div>
                 </div>
 
                 {errors.submit && <div className="error-banner">{errors.submit}</div>}
 
                 <form onSubmit={handleSubmit} className="auth-form">
                     <div className="form-group">
-                        <label htmlFor="email">Email Address</label>
+                        <label htmlFor="Email">Email Address</label>
                         <input
                             type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
+                            id="Email"
+                            name="Email"
+                            value={formData.Email}
                             onChange={handleChange}
                             placeholder="admin@email.com"
-                            className={errors.email ? 'error' : ''}
+                            className={errors.Email ? 'error' : ''}
                         />
-                        {errors.email && <span className="error-text">{errors.email}</span>}
+                        {errors.Email && <span className="error-text">{errors.Email}</span>}
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="password">Password</label>
+                        <label htmlFor="Password">Password</label>
                         <input
                             type="password"
-                            id="password"
-                            name="password"
-                            value={formData.password}
+                            id="Password"
+                            name="Password"
+                            value={formData.Password}
                             onChange={handleChange}
                             placeholder="••••••••"
-                            className={errors.password ? 'error' : ''}
+                            className={errors.Password ? 'error' : ''}
                         />
-                        {errors.password && <span className="error-text">{errors.password}</span>}
+                        {errors.Password && <span className="error-text">{errors.Password}</span>}
                     </div>
 
                     <button
@@ -110,14 +114,10 @@ const AdminLogin = () => {
                     Don't have an admin account? <Link to="/admin/signup">Sign up here</Link>
                 </p>
 
-                <div className="auth-divider">or</div>
-
-                <p className="auth-footer">
-                    Regular user? <Link to="/user/login">Login as User</Link>
-                </p>
             </div>
         </div>
     );
 };
 
 export default AdminLogin;
+

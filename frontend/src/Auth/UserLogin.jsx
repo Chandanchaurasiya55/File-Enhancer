@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import emoji from '../assets/emoji.png';
 import '../styles/Auth.css';
 
 const UserLogin = () => {
     const [formData, setFormData] = useState({
-        email: '',
-        password: ''
+        Email: '',
+        Password: ''
     });
     const [submitting, setSubmitting] = useState(false);
     const [errors, setErrors] = useState({});
@@ -30,10 +31,11 @@ const UserLogin = () => {
     const validateForm = () => {
         const newErrors = {};
 
-        if (!formData.email.trim()) newErrors.email = 'Email is required';
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Invalid email format';
+        if (!formData.Email.trim()) newErrors.Email = 'Email is required';
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.Email)) newErrors.Email = 'Invalid email format';
 
-        if (!formData.password) newErrors.password = 'Password is required';
+        if (!formData.Password) newErrors.Password = 'Password is required';
+        if (formData.Password.length < 8) newErrors.Password = 'Password must be at least 8 characters';
 
         return newErrors;
     };
@@ -52,7 +54,7 @@ const UserLogin = () => {
         setSubmitting(false);
 
         if (result.success) {
-            navigate('/user/dashboard');
+            navigate('/');
         } else {
             setErrors({ submit: result.message });
         }
@@ -62,39 +64,41 @@ const UserLogin = () => {
         <div className="auth-container">
             <div className="auth-box">
                 <div className="auth-header">
-                    <h2>Welcome Back</h2>
-                    <p>Continue to your account</p>
+                    <div className="header-content">
+                        <img src={emoji} alt="User Emoji" className="header-emoji" />
+                        <h2>Welcome Back</h2>
+                    </div>
                 </div>
 
                 {errors.submit && <div className="error-banner">{errors.submit}</div>}
 
                 <form onSubmit={handleSubmit} className="auth-form">
                     <div className="form-group">
-                        <label htmlFor="email">Email Address</label>
+                        <label htmlFor="Email">Email Address</label>
                         <input
                             type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
+                            id="Email"
+                            name="Email"
+                            value={formData.Email}
                             onChange={handleChange}
                             placeholder="Enter your email"
-                            className={errors.email ? 'error' : ''}
+                            className={errors.Email ? 'error' : ''}
                         />
-                        {errors.email && <span className="error-text">{errors.email}</span>}
+                        {errors.Email && <span className="error-text">{errors.Email}</span>}
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="password">Password</label>
+                        <label htmlFor="Password">Password</label>
                         <input
                             type="password"
-                            id="password"
-                            name="password"
-                            value={formData.password}
+                            id="Password"
+                            name="Password"
+                            value={formData.Password}
                             onChange={handleChange}
                             placeholder="Enter your password"
-                            className={errors.password ? 'error' : ''}
+                            className={errors.Password ? 'error' : ''}
                         />
-                        {errors.password && <span className="error-text">{errors.password}</span>}
+                        {errors.Password && <span className="error-text">{errors.Password}</span>}
                     </div>
 
                     <button
@@ -102,22 +106,18 @@ const UserLogin = () => {
                         className="submit-btn"
                         disabled={submitting}
                     >
-                        {submitting ? 'Logging in...' : 'Sign In'}
+                        {submitting ? 'Logging In...' : 'Login'}
                     </button>
                 </form>
 
                 <p className="auth-footer">
-                    Don't have an account? <Link to="/user/signup">Create one</Link>
+                    Don't have an account? <Link to="/user/signup">Sign up here</Link>
                 </p>
 
-                <div className="auth-divider">or</div>
-
-                <p className="auth-footer">
-                    <Link to="/admin/login">Sign in as Admin</Link>
-                </p>
             </div>
         </div>
     );
 };
 
 export default UserLogin;
+

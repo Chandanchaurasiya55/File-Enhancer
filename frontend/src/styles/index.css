@@ -124,9 +124,8 @@ body, html {
 }
 
 .btn-premium:hover {
-  background-color: #a90006;
-  color: #a90006;
-  transform: translateY(-2px);
+  background-color: #f80f0f;
+  color: #f3eeee;
   box-shadow: 0 8px 16px rgba(169, 0, 6, 0.3);
 }
 
@@ -162,7 +161,6 @@ body, html {
 
 .btn-primary:hover {
   color: #a90006;
-  transform: translateY(-3px);
   box-shadow: 0 12px 24px rgba(169, 0, 6, 0.3);
 }
 
@@ -202,7 +200,6 @@ body, html {
 .btn-secondary:hover {
   color: #a90006;
   border-color: #a90006;
-  transform: translateY(-3px);
   box-shadow: 0 8px 16px rgba(169, 0, 6, 0.2);
 }
 

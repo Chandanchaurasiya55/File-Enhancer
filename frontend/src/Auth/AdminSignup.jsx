@@ -1,22 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../styles/Auth.css';
+import emoji from '../assets/emoji.png';
 
 const AdminSignup = () => {
+    const [adminExists, setAdminExists] = useState(null);
     const [formData, setFormData] = useState({
-        username: '',
-        email: '',
-        firstname: '',
-        lastname: '',
-        password: '',
-        confirmPassword: '',
-        adminSecret: ''
+        Fullname: '',
+        Email: '',
+        Password: '',
+        confirmPassword: ''
     });
     const [submitting, setSubmitting] = useState(false);
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
     const { adminSignup } = useAuth();
+
+    // Check if admin already exists
+    useEffect(() => {
+        const checkAdmin = async () => {
+            try {
+                const response = await fetch('http://localhost:3000/api/auth/admin/check');
+                const data = await response.json();
+                setAdminExists(data.exists);
+            } catch (err) {
+                console.error('Error checking admin:', err);
+            }
+        };
+        checkAdmin();
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -35,24 +48,19 @@ const AdminSignup = () => {
     const validateForm = () => {
         const newErrors = {};
 
-        if (!formData.username.trim()) newErrors.username = 'Username is required';
-        if (formData.username.length < 3) newErrors.username = 'Username must be at least 3 characters';
+        if (!formData.Fullname.trim()) newErrors.Fullname = 'Full name is required';
+        if (formData.Fullname.trim().length < 3) newErrors.Fullname = 'Full name must be at least 3 characters';
 
-        if (!formData.email.trim()) newErrors.email = 'Email is required';
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Invalid email format';
+        if (!formData.Email.trim()) newErrors.Email = 'Email is required';
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.Email)) newErrors.Email = 'Invalid email format';
 
-        if (!formData.firstname.trim()) newErrors.firstname = 'First name is required';
-        if (!formData.lastname.trim()) newErrors.lastname = 'Last name is required';
-
-        if (!formData.password) newErrors.password = 'Password is required';
-        if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
+        if (!formData.Password) newErrors.Password = 'Password is required';
+        if (formData.Password.length < 8) newErrors.Password = 'Password must be at least 8 characters';
 
         if (!formData.confirmPassword) newErrors.confirmPassword = 'Please confirm your password';
-        if (formData.password !== formData.confirmPassword) {
+        if (formData.Password !== formData.confirmPassword) {
             newErrors.confirmPassword = 'Passwords do not match';
         }
-
-        if (!formData.adminSecret) newErrors.adminSecret = 'Admin registration code is required';
 
         return newErrors;
     };
@@ -67,7 +75,10 @@ const AdminSignup = () => {
         }
 
         setSubmitting(true);
-        const result = await adminSignup(formData);
+        
+        // Send only required fields to backend (exclude confirmPassword)
+        const { confirmPassword: _, ...dataToSend } = formData;
+        const result = await adminSignup(dataToSend);
         setSubmitting(false);
 
         if (result.success) {
@@ -77,101 +88,85 @@ const AdminSignup = () => {
         }
     };
 
+    if (adminExists === null) {
+        return (
+            <div className="auth-container">
+                <div className="auth-box">
+                    <p>Checking admin status...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (adminExists) {
+        return (
+            <div className="auth-container">
+                <div className="auth-box">
+                    <div className="auth-header">
+                        <h2>Admin Account Exists</h2>
+                        <p>An admin account already exists</p>
+                    </div>
+                    <p className="auth-footer">
+                        <Link to="/admin/login">Login to your admin account</Link>
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="auth-container">
             <div className="auth-box">
                 <div className="auth-header">
-                    <h2>Admin Registration</h2>
-                    <p>Create admin account</p>
+                    <div className="header-content">
+                        <img src={emoji} alt="Admin Emoji" className="header-emoji" />
+                        <h2>Create Admin Account</h2>
+                    </div>
                 </div>
 
                 {errors.submit && <div className="error-banner">{errors.submit}</div>}
 
                 <form onSubmit={handleSubmit} className="auth-form">
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label htmlFor="firstname">First Name</label>
-                            <input
-                                type="text"
-                                id="firstname"
-                                name="firstname"
-                                value={formData.firstname}
-                                onChange={handleChange}
-                                placeholder="John"
-                                className={errors.firstname ? 'error' : ''}
-                            />
-                            {errors.firstname && <span className="error-text">{errors.firstname}</span>}
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="lastname">Last Name</label>
-                            <input
-                                type="text"
-                                id="lastname"
-                                name="lastname"
-                                value={formData.lastname}
-                                onChange={handleChange}
-                                placeholder="Doe"
-                                className={errors.lastname ? 'error' : ''}
-                            />
-                            {errors.lastname && <span className="error-text">{errors.lastname}</span>}
-                        </div>
-                    </div>
-
                     <div className="form-group">
-                        <label htmlFor="username">Username</label>
+                        <label htmlFor="Fullname">Full Name</label>
                         <input
                             type="text"
-                            id="username"
-                            name="username"
-                            value={formData.username}
+                            id="Fullname"
+                            name="Fullname"
+                            value={formData.Fullname}
                             onChange={handleChange}
-                            placeholder="johndoe123"
-                            className={errors.username ? 'error' : ''}
+                            placeholder="John Doe"
+                            className={errors.Fullname ? 'error' : ''}
                         />
-                        {errors.username && <span className="error-text">{errors.username}</span>}
+                        {errors.Fullname && <span className="error-text">{errors.Fullname}</span>}
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="email">Email Address</label>
+                        <label htmlFor="Email">Email Address</label>
                         <input
                             type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
+                            id="Email"
+                            name="Email"
+                            value={formData.Email}
                             onChange={handleChange}
-                            placeholder="your@email.com"
-                            className={errors.email ? 'error' : ''}
+                            placeholder="admin@email.com"
+                            className={errors.Email ? 'error' : ''}
                         />
-                        {errors.email && <span className="error-text">{errors.email}</span>}
+                        {errors.Email && <span className="error-text">{errors.Email}</span>}
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="adminSecret">Admin Code</label>
+                        <label htmlFor="Password">Password</label>
                         <input
                             type="password"
-                            id="adminSecret"
-                            name="adminSecret"
-                            value={formData.adminSecret}
-                            onChange={handleChange}
-                            placeholder="Enter admin registration code"
-                            className={errors.adminSecret ? 'error' : ''}
-                        />
-                        {errors.adminSecret && <span className="error-text">{errors.adminSecret}</span>}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="password">Password</label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={formData.password}
+                            id="Password"
+                            name="Password"
+                            value={formData.Password}
                             onChange={handleChange}
                             placeholder="••••••••"
-                            className={errors.password ? 'error' : ''}
+                            className={errors.Password ? 'error' : ''}
                         />
-                        {errors.password && <span className="error-text">{errors.password}</span>}
+                        {errors.Password && <span className="error-text">{errors.Password}</span>}
                     </div>
 
                     <div className="form-group">
@@ -193,7 +188,7 @@ const AdminSignup = () => {
                         className="submit-btn"
                         disabled={submitting}
                     >
-                        {submitting ? 'Creating Account...' : 'Sign Up'}
+                        {submitting ? 'Creating Account...' : 'Create Admin Account'}
                     </button>
                 </form>
 

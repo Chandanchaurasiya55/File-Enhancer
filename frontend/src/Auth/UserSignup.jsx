@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import emoji from '../assets/emoji.png';
 import '../styles/Auth.css';
 
 const UserSignup = () => {
     const [formData, setFormData] = useState({
-        username: '',
-        email: '',
-        firstname: '',
-        lastname: '',
-        password: '',
+        Fullname: '',
+        Email: '',
+        Phone: '',
+        Password: '',
         confirmPassword: ''
     });
     const [submitting, setSubmitting] = useState(false);
@@ -34,20 +34,20 @@ const UserSignup = () => {
     const validateForm = () => {
         const newErrors = {};
 
-        if (!formData.username.trim()) newErrors.username = 'Username is required';
-        if (formData.username.length < 3) newErrors.username = 'Username must be at least 3 characters';
+        if (!formData.Fullname.trim()) newErrors.Fullname = 'Full name is required';
+        if (formData.Fullname.trim().length < 3) newErrors.Fullname = 'Full name must be at least 3 characters';
 
-        if (!formData.email.trim()) newErrors.email = 'Email is required';
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Invalid email format';
+        if (!formData.Email.trim()) newErrors.Email = 'Email is required';
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.Email)) newErrors.Email = 'Invalid email format';
 
-        if (!formData.firstname.trim()) newErrors.firstname = 'First name is required';
-        if (!formData.lastname.trim()) newErrors.lastname = 'Last name is required';
+        if (!formData.Phone.trim()) newErrors.Phone = 'Phone number is required';
+        if (!/^[0-9]{10}$/.test(formData.Phone)) newErrors.Phone = 'Phone number must be exactly 10 digits';
 
-        if (!formData.password) newErrors.password = 'Password is required';
-        if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
+        if (!formData.Password) newErrors.Password = 'Password is required';
+        if (formData.Password.length < 8) newErrors.Password = 'Password must be at least 8 characters';
 
         if (!formData.confirmPassword) newErrors.confirmPassword = 'Please confirm your password';
-        if (formData.password !== formData.confirmPassword) {
+        if (formData.Password !== formData.confirmPassword) {
             newErrors.confirmPassword = 'Passwords do not match';
         }
 
@@ -64,11 +64,14 @@ const UserSignup = () => {
         }
 
         setSubmitting(true);
-        const result = await userSignup(formData);
+        
+        // Send only required fields to backend (exclude confirmPassword)
+        const { confirmPassword, ...dataToSend } = formData;
+        const result = await userSignup(dataToSend);
         setSubmitting(false);
 
         if (result.success) {
-            navigate('/user/dashboard');
+            navigate('/');
         } else {
             setErrors({ submit: result.message });
         }
@@ -78,83 +81,69 @@ const UserSignup = () => {
         <div className="auth-container">
             <div className="auth-box">
                 <div className="auth-header">
-                    <h2>Get Started</h2>
-                    <p>Create your account</p>
+                    <div className="header-content">
+                        <img src={emoji} alt="User Emoji" className="header-emoji" />
+                        <h2>Get Started</h2>
+                    </div>
                 </div>
 
                 {errors.submit && <div className="error-banner">{errors.submit}</div>}
 
                 <form onSubmit={handleSubmit} className="auth-form">
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label htmlFor="firstname">First Name</label>
-                            <input
-                                type="text"
-                                id="firstname"
-                                name="firstname"
-                                value={formData.firstname}
-                                onChange={handleChange}
-                                placeholder="John"
-                                className={errors.firstname ? 'error' : ''}
-                            />
-                            {errors.firstname && <span className="error-text">{errors.firstname}</span>}
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="lastname">Last Name</label>
-                            <input
-                                type="text"
-                                id="lastname"
-                                name="lastname"
-                                value={formData.lastname}
-                                onChange={handleChange}
-                                placeholder="Doe"
-                                className={errors.lastname ? 'error' : ''}
-                            />
-                            {errors.lastname && <span className="error-text">{errors.lastname}</span>}
-                        </div>
-                    </div>
-
                     <div className="form-group">
-                        <label htmlFor="username">Username</label>
+                        <label htmlFor="Fullname">Full Name</label>
                         <input
                             type="text"
-                            id="username"
-                            name="username"
-                            value={formData.username}
+                            id="Fullname"
+                            name="Fullname"
+                            value={formData.Fullname}
                             onChange={handleChange}
-                            placeholder="johndoe123"
-                            className={errors.username ? 'error' : ''}
+                            placeholder="John Doe"
+                            className={errors.Fullname ? 'error' : ''}
                         />
-                        {errors.username && <span className="error-text">{errors.username}</span>}
+                        {errors.Fullname && <span className="error-text">{errors.Fullname}</span>}
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="email">Email Address</label>
+                        <label htmlFor="Email">Email Address</label>
                         <input
                             type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
+                            id="Email"
+                            name="Email"
+                            value={formData.Email}
                             onChange={handleChange}
                             placeholder="your@email.com"
-                            className={errors.email ? 'error' : ''}
+                            className={errors.Email ? 'error' : ''}
                         />
-                        {errors.email && <span className="error-text">{errors.email}</span>}
+                        {errors.Email && <span className="error-text">{errors.Email}</span>}
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="password">Password</label>
+                        <label htmlFor="Phone">Phone Number</label>
+                        <input
+                            type="tel"
+                            id="Phone"
+                            name="Phone"
+                            value={formData.Phone}
+                            onChange={handleChange}
+                            placeholder="10-digit mobile number"
+                            className={errors.Phone ? 'error' : ''}
+                        />
+                        {errors.Phone && <span className="error-text">{errors.Phone}</span>}
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="Password">Password</label>
                         <input
                             type="password"
-                            id="password"
-                            name="password"
-                            value={formData.password}
+                            id="Password"
+                            name="Password"
+                            value={formData.Password}
                             onChange={handleChange}
                             placeholder="••••••••"
-                            className={errors.password ? 'error' : ''}
+                            className={errors.Password ? 'error' : ''}
                         />
-                        {errors.password && <span className="error-text">{errors.password}</span>}
+                        {errors.Password && <span className="error-text">{errors.Password}</span>}
                     </div>
 
                     <div className="form-group">

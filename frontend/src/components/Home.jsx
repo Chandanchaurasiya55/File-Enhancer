@@ -19,7 +19,7 @@ const Home = () => {
           and every frame tells a story worth preserving.
         </p>
         <div className="hero-cta">
-          <button className="btn-primary" onClick={() => handleNavClick('#upload')}>Start Creating</button>
+          <button className="btn-primary" onClick={() => handleNavClick('#services')}>Start Creating</button>
           <button className="btn-secondary" onClick={() => handleNavClick('#features')}>Explore Studio</button>
         </div>
       </div>

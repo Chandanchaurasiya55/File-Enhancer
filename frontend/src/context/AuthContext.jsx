@@ -2,13 +2,13 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3300/api';
 
     // Set token in localStorage
     useEffect(() => {
@@ -217,11 +217,13 @@ export const AuthProvider = ({ children }) => {
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-
-export const useAuth = () => {
+const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {
         throw new Error('useAuth must be used within an AuthProvider');
     }
     return context;
 };
+
+
+export { AuthProvider, useAuth };

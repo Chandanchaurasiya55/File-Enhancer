@@ -138,7 +138,7 @@
 }
 
 .btn-premium {
-  background: linear-gradient(135deg, #a90006 0%, #7b0004 100%);
+ background-color: #a90006;
   color: white;
   padding: 10px 24px;
   border: none;
@@ -172,59 +172,106 @@
 .btn-premium::before {
   content: '';
   position: absolute;
+}
 
-  .btn-premium:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 30px rgba(169, 0, 6, 0.4);
+/* User Menu & Emoji Dropdown */
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.emoji-btn {
+  font-size: 2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 1px;
+  border-radius: 50%;
+}
+
+.emoji-icon {
+  width: 56px;
+  height: 55px;
+  object-fit: contain;
+  background-color: #969393;
+  border-radius: 50%;
+ 
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .nav {
+    padding: 1.2rem 1.5rem;
+    flex-direction: column;
+    gap: 1rem;
   }
 
-  .btn-premium:active {
-    transform: translateY(-1px);
+  .logo {
+    font-size: 1.3rem;
   }
 
-  /* Responsive */
-  @media (max-width: 768px) {
-    .nav {
-      padding: 1.2rem 1.5rem;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .logo {
-      font-size: 1.3rem;
-    }
-
-    .logo::after {
-      right: -18px;
-      font-size: 0.7rem;
-    }
-
-    .nav-menu {
-      gap: 1.5rem;
-      flex-wrap: wrap;
-      justify-content: center;
-      width: 100%;
-    }
-
-    .nav-link {
-      font-size: 0.8rem;
-    }
+  .logo::after {
+    right: -18px;
+    font-size: 0.7rem;
   }
 
-  @media (max-width: 480px) {
-    .nav {
-      padding: 1rem;
-    }
-
-    .logo {
-      font-size: 1.1rem;
-    }
-
-    .nav-menu {
-      gap: 0.8rem;
-    }
-
-    .nav-link {
-      font-size: 0.75rem;
-    }
+  .nav-menu {
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
   }
+
+  .nav-link {
+    font-size: 0.8rem;
+  }
+
+  .user-menu {
+    gap: 1rem;
+  }
+
+  .emoji-btn {
+    font-size: 1.5rem;
+  }
+
+  .dropdown-menu {
+    min-width: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav {
+    padding: 1rem;
+  }
+
+  .logo {
+    font-size: 1.1rem;
+  }
+
+  .nav-menu {
+    gap: 0.8rem;
+  }
+
+  .nav-link {
+    font-size: 0.75rem;
+  }
+
+  .nav-user {
+    font-size: 0.9rem;
+  }
+
+  .emoji-btn {
+    font-size: 1.4rem;
+    padding: 3px 8px;
+  }
+
+  .dropdown-menu {
+    min-width: 150px;
+  }
+
+  .dropdown-item {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+}

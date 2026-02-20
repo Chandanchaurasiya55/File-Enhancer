@@ -5,12 +5,13 @@ import { AuthProvider } from './context/AuthContext';
 import Navigation from './components/Navigation'
 import Home from './components/Home'
 import Services from './components/Services'
-import Upload from './components/Upload'
 import Features from './components/Features'
 import Stats from './components/Stats'
 import Premium from './components/Premium'
 import Pricing from './components/Pricing'
 import Footer from './components/Footer'
+import VideoProcessor from './components/VideoProcessor'
+import ServiceDetail from './components/ServiceDetail'
 
 // Auth Pages
 import UserLogin from './Auth/UserLogin';
@@ -33,7 +34,6 @@ function LandingPage() {
       <Navigation />
       <Home />
       <Services />
-      <Upload />
       <Features />
       <Stats />
       <Premium />
@@ -50,6 +50,12 @@ function App() {
         <Routes>
           {/* Landing Page */}
           <Route path="/" element={<LandingPage />} />
+
+          {/* Video Processing */}
+          <Route path="/process-video" element={<VideoProcessor />} />
+
+          {/* Service Detail Pages */}
+          <Route path="/service/:serviceId" element={<ServiceDetail />} />
 
           {/* User Auth Routes */}
           <Route path="/user/login" element={<UserLogin />} />

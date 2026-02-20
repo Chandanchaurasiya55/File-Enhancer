@@ -1,0 +1,369 @@
+/* Service Detail Page */
+.service-detail-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 8rem 4rem 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.service-detail-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.service-icon-large {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  display: inline-block;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.service-detail-header h1 {
+  color: #1a1a1a;
+  font-size: 3rem;
+  margin: 0 0 1rem 0;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #a90006 0%, #7b0004 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.service-tagline {
+  color: #495057;
+  font-size: 1.2rem;
+  margin: 0 0 1.5rem 0;
+  font-weight: 500;
+}
+
+.service-detail-description {
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(169, 0, 6, 0.1);
+}
+
+.service-detail-description p {
+  color: #333;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  margin: 0;
+}
+
+/* Details Grid */
+.service-details-grid {
+  /* single column layout; upload centered */
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+/* grouping for features & benefits below upload */
+.features-benefits-row {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 2.5rem;
+}
+
+.details-column {
+  animation: slideUp 0.6s ease-out 0.1s both;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.upload-column {
+  animation: slideUp 0.6s ease-out 0.2s both;
+  margin: 0 auto; /* center upload box */
+  max-width: 800px;
+}
+
+.details-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(169, 0, 6, 0.1);
+  margin-bottom: 2rem;
+  transition: all 0.3s ease;
+}
+
+.details-section:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+.details-section h3 {
+  color: #1a1a1a;
+  font-size: 1.4rem;
+  margin: 0 0 1.5rem 0;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.features-list,
+.benefits-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.features-list li,
+.benefits-list li {
+  color: #333;
+  font-size: 1rem;
+  padding: 0.8rem 0 0.8rem 0;
+  padding-left: 2rem;
+  position: relative;
+  line-height: 1.6;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.features-list li:last-child,
+.benefits-list li:last-child {
+  border-bottom: none;
+}
+
+.features-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #a90006;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.benefits-list li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: #a90006;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.upload-prompt {
+  background: linear-gradient(135deg, rgba(169, 0, 6, 0.1) 0%, rgba(169, 0, 6, 0.05) 100%);
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid rgba(169, 0, 6, 0.2);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.upload-prompt h3 {
+  color: #1a1a1a;
+  font-size: 1.3rem;
+  margin: 0 0 0.5rem 0;
+  font-weight: 700;
+}
+
+.upload-prompt p {
+  color: #495057;
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Upload Section Override */
+.upload-section {
+  padding: 0;
+  background: transparent;
+  max-width: 100%;
+}
+
+#upload {
+  padding: 0;
+}
+
+.upload-container {
+  background: white;
+  border: 2px dashed #a90006;
+  padding: 3rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.upload-container:hover {
+  border-color: #a90006;
+  background: linear-gradient(135deg, #ffffff 0%, #fff8f8 100%);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .service-detail-container {
+    padding: 6rem 2rem 3rem;
+  }
+
+  .service-details-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .service-detail-header h1 {
+    font-size: 2.3rem;
+  }
+
+  .service-tagline {
+    font-size: 1.1rem;
+  }
+
+  .service-icon-large {
+    font-size: 3.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .service-detail-container {
+    padding: 5.5rem 1.5rem 2rem;
+  }
+
+  .service-icon-large {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .service-detail-header h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .service-tagline {
+    font-size: 1rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .service-detail-description {
+    padding: 1.5rem;
+  }
+
+  .service-detail-description p {
+    font-size: 0.95rem;
+  }
+
+  .details-section {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .details-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+
+  .features-list li,
+  .benefits-list li {
+    font-size: 0.95rem;
+    padding: 0.7rem 0 0.7rem 0;
+    padding-left: 1.8rem;
+  }
+
+  .upload-prompt {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .upload-prompt h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .upload-container {
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .service-detail-container {
+    padding: 4.5rem 1rem 1.5rem;
+  }
+
+  .service-icon-large {
+    font-size: 2.5rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .service-detail-header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .service-tagline {
+    font-size: 0.95rem;
+  }
+
+  .service-details-grid {
+    gap: 1.5rem;
+  }
+
+  .details-section {
+    padding: 1.2rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .details-section h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .features-list li,
+  .benefits-list li {
+    font-size: 0.9rem;
+    padding: 0.6rem 0 0.6rem 0;
+    padding-left: 1.6rem;
+  }
+
+  .upload-prompt {
+    padding: 1.2rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .upload-prompt h3 {
+    font-size: 1rem;
+  }
+
+  .upload-prompt p {
+    font-size: 0.9rem;
+  }
+
+  .upload-container {
+    padding: 1.5rem 1rem;
+  }
+}

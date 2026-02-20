@@ -18,11 +18,19 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
         return <Navigate to="/user/login" replace />;
     }
 
-    if (requiredRole && user?.role !== requiredRole) {
-        return <Navigate to="/unauthorized" replace />;
+    if (requiredRole) {
+        // For admin routes, allow both 'admin' and 'superadmin' roles
+        if (requiredRole === 'admin' && (user?.role !== 'admin' && user?.role !== 'superadmin')) {
+            return <Navigate to="/unauthorized" replace />;
+        }
+        // For user routes, only allow 'user' role
+        else if (requiredRole === 'user' && user?.role !== 'user') {
+            return <Navigate to="/unauthorized" replace />;
+        }
     }
 
     return children;
 };
 
 export default ProtectedRoute;
+

@@ -1,426 +1,644 @@
-# BUIMB DIGITAL - Premium Video Processing Studio
-
-A modern, responsive web application for professional video and image processing built with **React** and **Vite**.
-
-![Version](https://img.shields.io/badge/version-0.0.0-blue)
-![React](https://img.shields.io/badge/react-19.2.0-blue)
-![Vite](https://img.shields.io/badge/vite-7.3.1-green)
-![License](https://img.shields.io/badge/license-MIT-green)
-
-## 🎬 Overview
-
-BUIMB DIGITAL is a premium video processing platform offering cutting-edge tools for video compression, enhancement, upscaling, and watermark removal. This frontend application provides an intuitive user interface for accessing powerful video processing capabilities.
-
-## ✨ Features
-
-### Core Services
-
-- **🎬 Video Compression** - Reduce file sizes by up to 95% without sacrificing visual quality
-- **✨ AI Enhancement** - Professional upscaling, noise reduction, and color grading
-- **📈 Video Upscaling** - Transform videos from 720p to 4K with AI-powered technology
-- **⚡ Format Conversion** - Convert between MP4, MOV, AVI, MKV, WEBM, PRORES, and HEVC formats
-- **🎭 Effects & Transitions** - Hollywood-quality visual effects and professional transitions
-- **🚫 Watermark Removal** - Advanced AI detection and removal of watermarks and logos
-
-### Platform Capabilities
-
-- **Cloud Infrastructure** - Enterprise-grade servers across 6 continents
-- **Real-time Processing** - Process 8K footage with zero latency
-- **Military-Grade Security** - End-to-end encryption, SOC 2 compliant, GDPR certified
-- **Batch Processing** - Process hundreds of videos simultaneously
-- **API Integration** - RESTful API for seamless workflow integration
-- **File Validation** - Support for video and image formats only
-- **Interactive UI** - Smooth scrolling navigation and modern design
-
-## 📋 Project Structure
-
-```
-frontend/
-├── src/
-│   ├── components/
-│   │   ├── Home.jsx           # Hero section with CTA
-│   │   ├── Navigation.jsx      # Top navigation bar
-│   │   ├── Services.jsx        # Core services showcase
-│   │   ├── Upload.jsx          # File upload component
-│   │   ├── Features.jsx        # Platform features
-│   │   ├── Stats.jsx           # Statistics section
-│   │   ├── Pricing.jsx         # Subscription plans
-│   │   └── Footer.jsx          # Footer section
-│   ├── styles/
-│   │   ├── index.css           # Global styles & CSS variables
-│   │   ├── Home.css            # Hero section styles
-│   │   ├── Navigation.css      # Navigation styles
-│   │   ├── Services.css        # Services grid styles
-│   │   ├── Upload.css          # Upload section styles
-│   │   ├── Features.css        # Features section styles
-│   │   ├── Pricing.css         # Pricing page styles
-│   │   ├── Stats.css           # Statistics styles
-│   │   └── Footer.css          # Footer styles
-│   ├── App.jsx                 # Main App component
-│   └── main.jsx                # Entry point
-├── public/                      # Static assets
-├── index.html                   # HTML template
-├── vite.config.js              # Vite configuration
-├── eslint.config.js            # ESLint configuration
-└── package.json                # Dependencies & scripts
-```
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Node.js (v16 or higher)
-- npm or yarn
-
-### Installation
-
-1. **Clone the repository**
-
-   ```bash
-   git clone <repository-url>
-   cd frontend
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-3. **Start development server**
-   ```bash
-   npm run dev
-   ```
-   The application will open at `http://localhost:5173`
-
-### Build for Production
-
-```bash
-npm run build
-```
-
-This creates an optimized production build in the `dist/` directory.
-
-## 🎨 Color Scheme
-
-The application uses a premium red color scheme:
-
-```css
-:root {
-  --accent: #a90006; /* Primary red */
-  --accent-light: #d51919; /* Lighter red */
-  --text: #1a1a1a; /* Dark text */
-  --white: #ffffff; /* White background */
-  --light-gray: #f8f9fa; /* Light gray bg */
-  --dark-gray: #495057; /* Gray text */
-  --border: #d0d5dd; /* Border color */
-}
-```
-
-## 📱 Components
-
-### Navigation
-
-- Smooth scroll navigation to all sections
-- Responsive mobile menu
-- Premium red CTA button
-- Login button
-
-### Home (Hero Section)
-
-- Eye-catching hero with tagline
-- Dual CTA buttons for user engagement
-- Animated entrance
-
-### Services
-
-- 6 core service cards
-- Clickable cards that navigate to upload
-- Icon and description for each service
-- Smooth hover effects
-
-### Upload
-
-- File manager integration
-- Video and image format validation
-- Real-time error messages for invalid files
-- Supported formats: MP4, MOV, AVI, MKV, WEBM, PRORES, HEVC
-
-### Features
-
-- 4 key platform capabilities
-- Animated on-scroll reveal
-- Numbered feature cards
-- Detailed descriptions
-
-### Pricing
-
-- 3 subscription tiers (Starter, Professional, Enterprise)
-- "Most Popular" badge on mid-tier plan
-- Feature checklist per plan
-- FAQ section
-- Responsive card layout
-
-### Stats
-
-- Key metrics display
-- Company statistics
-
-### Footer
-
-- Links and company information
-
-## 🔧 Key Features
-
-### Smooth Scrolling Navigation
-
-Users can navigate between sections with smooth scroll animations:
-
-```jsx
-const handleNavClick = (sectionId) => {
-  const element = document.querySelector(sectionId);
-  if (element) {
-    element.scrollIntoView({ behavior: "smooth" });
-  }
-};
-```
-
-### File Validation
-
-Upload component validates file types:
-
-- Accepts: Video formats (MP4, MOV, AVI, MKV, WEBM)
-- Accepts: Image formats (JPEG, PNG, GIF, WEBP)
-- Shows error message for invalid formats
-
-### Responsive Design
-
-- Mobile-first approach
-- Breakpoints: 480px, 768px, 1024px
-- Fully responsive grid layouts
-
-### Button States
-
-- Normal state: Red background (#a90006)
-- Hover state: White background with red text
-- Smooth transitions and transforms
-
-## 📦 Available Scripts
-
-### Development
-
-```bash
-npm run dev
-```
-
-Starts the development server with hot-reload.
-
-### Build
-
-```bash
-npm run build
-```
-
-Creates an optimized production build.
-
-### Preview
-
-```bash
-npm run preview
-```
-
-Preview the production build locally.
-
-### Lint
-
-```bash
-npm run lint
-```
-
-Check code quality with ESLint.
-
-## 🎯 Pricing Plans
-
-### Starter - $9/month
-
-- 5GB storage per month
-- Basic video compression
-- 480p to 1080p quality
-- Email support
-
-### Professional - $29/month ⭐ (Most Popular)
-
-- 50GB storage per month
-- 4K video processing
-- AI Enhancement & Upscaling
-- Watermark removal
-- Priority support
-- Batch processing
-- No ads
-
-### Enterprise - $99/month
-
-- 500GB storage per month
-- 8K video processing
-- All Professional features
-- Advanced effects & transitions
-- 24/7 phone support
-- Unlimited batch processing
-- Custom API access
-- Team collaboration
-
-## 🎬 Supported Video Formats
-
-- MP4 (MPEG-4)
-- MOV (QuickTime)
-- AVI (Audio Video Interleave)
-- MKV (Matroska)
-- WEBM (WebM)
-- PRORES (Pro Res)
-- HEVC (H.265)
-
-## 🖼️ Image Formats
-
-- JPEG/JPG
-- PNG
-- GIF
-- WEBP
-- SVG
-
-## 🔐 Security Features
-
-- ✅ End-to-end encryption
-- ✅ SOC 2 compliant
-- ✅ GDPR certified
-- ✅ File type validation
-- ✅ Secure upload process
-
-## 🚀 Performance
-
-- **Vite** for fast development and optimized builds
-- **React 19** for modern component architecture
-- **CSS Grid & Flexbox** for responsive layouts
-- **Hardware-accelerated animations**
-- **Lazy loading** for images and components
-
-## 📱 Browser Support
-
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-- Mobile browsers
-
-## 🔗 Navigation Structure
-
-```
-Home
-├── Services (clickable cards → Upload)
-├── Upload (file manager integration)
-├── Features (platform capabilities)
-├── Pricing (subscription plans)
-└── Footer
-```
-
-Quick navigation links in navbar:
-
-- Services
-- Features
-- Pricing
-- Studio (Upload)
-- Login
-- Get Started (CTA)
-
-## 🛠️ Technology Stack
-
-| Technology        | Purpose                 |
-| ----------------- | ----------------------- |
-| React 19.2.0      | UI framework            |
-| Vite 7.3.1        | Build tool & dev server |
-| CSS3              | Styling & animations    |
-| JavaScript (ES6+) | Core logic              |
-| ESLint            | Code quality            |
-
-## 📄 License
-
-MIT License - See LICENSE file for details
-
-## 👥 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📞 Support
-
-For support, issues, or questions:
-
-- Email: support@buimbdigital.com
-- Website: [www.buimbdigital.com](https://www.buimbdigital.com)
-- Documentation: [docs.buimbdigital.com](https://docs.buimbdigital.com)
-
-## 🐛 Bug Reports
-
-Found a bug? Please create an issue on GitHub with:
-
-- Description of the bug
-- Steps to reproduce
-- Expected vs actual behavior
-- Screenshots (if applicable)
-
-## 📈 Roadmap
-
-- [ ] Backend API integration
-- [ ] User authentication
-- [ ] Video processing pipeline
-- [ ] Cloud storage integration
-- [ ] Advanced analytics
-- [ ] Team collaboration features
-- [ ] Custom watermarks
-- [ ] Video templates
-- [ ] Automation workflows
-
-## 📝 Version History
-
-### Version 0.0.0
-
-- Initial project setup
-- Core components and styling
-- Navigation and routing
-- Pricing page with subscription tiers
-- File upload validation
-- Service showcase
-
-## 🎯 Project Goals
-
-1. **Deliver Professional-Grade Tools** - Provide enterprise-level video processing capabilities
-2. **User-Friendly Interface** - Make complex features accessible to all users
-3. **High Performance** - Ensure fast processing and minimal latency
-4. **Security First** - Protect user content with military-grade encryption
-5. **Scalability** - Support millions of users and petabytes of data
-
-## 📊 Key Metrics
-
-- Cloud Infrastructure: 6 continents
-- Processing Capability: Up to 8K real-time
-- File Size Reduction: Up to 95%
-- Data Security: Military-grade encryption
-- API Response: <100ms
+# 🎬 File-Enhancer - Premium Video Studio Platform
+
+A modern, full-stack web application for video and image processing with user authentication, role-based dashboards, and premium features.
+
+## 📋 Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Installation](#installation)
+- [Running the Application](#running-the-application)
+- [API Documentation](#api-documentation)
+- [Database Schema](#database-schema)
+- [Authentication](#authentication)
+- [Environment Variables](#environment-variables)
+- [Folder Structure](#folder-structure)
+- [Key Components](#key-components)
+- [Contributing](#contributing)
 
 ---
 
-Made with ❤️ by **BUIMB DIGITAL** Team
+## 🎯 Overview
 
-**Version:** 0.0.0  
-**Last Updated:** February 16, 2026
-#   F i l e - E n h a n c e r 
- 
- #   F i l e - E n h a n c e r 
- 
- #   F i l e - E n h a n c e r 
- 
- 
+**File-Enhancer** is a premium video processing platform that allows users to:
+- Upload and process videos and images
+- Access professional editing tools
+- Subscribe to premium features
+- Manage files in personalized dashboards
+
+Admins can:
+- Manage user accounts and content
+- Monitor platform activity
+- Configure premium features
+- Track usage statistics
+
+---
+
+## ✨ Features
+
+### 🔐 **Authentication & Authorization**
+- User registration and login
+- Admin account management (single admin per instance)
+- JWT-based authentication
+- Password hashing with bcryptjs
+- Role-based access control (RBAC)
+
+### 👤 **User Features**
+- Create account with full name, email, phone, and password
+- Upload and manage video/image files
+- Access personal dashboard
+- Purchase premium features
+- View processing history
+
+### ⚙️ **Admin Features**
+- Manage user accounts
+- Monitor system activity
+- Configure premium pricing
+- View platform statistics
+- Manage content policies
+
+### 🎨 **User Interface**
+- Responsive landing page
+- Service highlights section
+- Premium feature showcase
+- Pricing information
+- Smooth navigation
+
+### 📱 **File Support**
+**Video Formats:** MP4, MOV, AVI, MKV, WEBM, PRORES, HEVC
+**Image Formats:** JPEG, PNG, GIF, WEBP, SVG
+
+---
+
+## 🛠 Tech Stack
+
+### **Backend**
+- **Framework:** Node.js + Express.js
+- **Database:** MongoDB with Mongoose
+- **Authentication:** JWT (JSON Web Tokens)
+- **Password Hashing:** bcryptjs
+- **Validation:** Custom middleware
+- **Server:** Nodemon (development)
+
+### **Frontend**
+- **Library:** React 19.2
+- **Build Tool:** Vite 7.3
+- **Routing:** React Router DOM 7.13
+- **Styling:** CSS3
+- **HTTP Client:** Fetch API
+- **State Management:** React Context API
+
+### **Development Tools**
+- ESLint for code quality
+- Nodemon for auto-reload
+- Vite for fast development
+
+---
+
+## 📁 Project Structure
+
+```
+File-Enhancer/
+├── Backend/
+│   ├── src/
+│   │   ├── app.js                          # Express configuration
+│   │   ├── Controller/
+│   │   │   ├── auth.controller.js          # Authentication logic
+│   │   │   └── admin.controller.js         # Admin operations
+│   │   ├── Models/
+│   │   │   ├── user.model.js               # User schema
+│   │   │   └── admin.model.js              # Admin schema
+│   │   ├── Routes/
+│   │   │   └── auth.route.js               # Auth routes
+│   │   ├── Middleware/
+│   │   │   ├── auth.middleware.js          # User authentication
+│   │   │   └── admin.middleware.js         # Admin authentication
+│   │   └── DB/
+│   │       └── db.js                       # MongoDB connection
+│   ├── server.js                           # Server entry point
+│   ├── .env                                # Environment variables
+│   ├── package.json
+│   └── README.md
+│
+├── frontend/
+│   ├── src/
+│   │   ├── App.jsx                         # Main app component
+│   │   ├── main.jsx                        # React entry point
+│   │   ├── Auth/
+│   │   │   ├── UserLogin.jsx               # User login page
+│   │   │   ├── UserSignup.jsx              # User signup form
+│   │   │   ├── AdminLogin.jsx              # Admin login page
+│   │   │   └── AdminSignup.jsx             # Admin signup form
+│   │   ├── components/
+│   │   │   ├── Navigation.jsx              # Top navbar
+│   │   │   ├── Home.jsx                    # Hero section
+│   │   │   ├── Services.jsx                # Services showcase
+│   │   │   ├── Upload.jsx                  # File upload widget
+│   │   │   ├── Features.jsx                # Feature highlights
+│   │   │   ├── Stats.jsx                   # Statistics section
+│   │   │   ├── Premium.jsx                 # Premium offer
+│   │   │   ├── Pricing.jsx                 # Pricing plans
+│   │   │   ├── Footer.jsx                  # Footer
+│   │   │   ├── UserDashboard.jsx           # User dashboard
+│   │   │   ├── AdminDashboard.jsx          # Admin dashboard
+│   │   │   ├── UnauthorizedPage.jsx        # 403 page
+│   │   │   └── ProtectedRoute.jsx          # Route protection
+│   │   ├── context/
+│   │   │   └── AuthContext.jsx             # Global auth state
+│   │   ├── styles/
+│   │   │   ├── index.css                   # Global styles
+│   │   │   ├── Auth.css                    # Auth pages styles
+│   │   │   ├── Dashboard.css               # Dashboard styles
+│   │   │   ├── Upload.css                  # Upload widget styles
+│   │   │   ├── Home.css                    # Hero styles
+│   │   │   ├── Navigation.css              # Navbar styles
+│   │   │   └── ... (other component styles)
+│   │   └── assets/                         # Images and icons
+│   ├── .env                                # Environment variables
+│   ├── vite.config.js                      # Vite configuration
+│   ├── eslint.config.js                    # ESLint configuration
+│   ├── index.html                          # HTML entry point
+│   └── package.json
+│
+├── README.md                               # This file
+├── PRODUCTION_SETUP.md                     # Production guide
+└── CHANGES_MADE.md                         # Change log
+```
+
+---
+
+## 🚀 Installation
+
+### Prerequisites
+- Node.js (v14 or higher)
+- npm or yarn
+- MongoDB (local or Atlas)
+
+### Backend Setup
+
+```bash
+# Navigate to backend directory
+cd Backend
+
+# Install dependencies
+npm install
+
+# Create .env file
+cp .env.example .env
+
+# Edit .env with your configuration
+# MONGODB_URI=mongodb://localhost:27017/fileenhancer
+# PORT=3000
+# JWT_SECRET=your_secret_key_here
+# jwtExpiration=1d
+# jwtRefreshExpiration=7d
+```
+
+### Frontend Setup
+
+```bash
+# Navigate to frontend directory
+cd frontend
+
+# Install dependencies
+npm install
+
+# Create .env file (if not exists)
+# Add: VITE_API_URL=http://localhost:3000/api
+```
+
+---
+
+## 🏃 Running the Application
+
+### Start Backend
+```bash
+cd Backend
+npm run dev
+# Server runs on http://localhost:3000
+```
+
+### Start Frontend (in another terminal)
+```bash
+cd frontend
+npm run dev
+# App runs on http://localhost:5173
+```
+
+### Access the Application
+- **Frontend:** http://localhost:5173
+- **Backend API:** http://localhost:3000/api
+
+---
+
+## 📚 API Documentation
+
+### Base URL
+```
+http://localhost:3000/api
+```
+
+### Authentication Endpoints
+
+#### User Registration
+```
+POST /auth/user/signup
+Content-Type: application/json
+
+{
+  "Fullname": "John Doe",
+  "Email": "john@example.com",
+  "Phone": "9876543210",
+  "Password": "SecurePass123"
+}
+
+Response:
+{
+  "success": true,
+  "message": "User registered successfully",
+  "token": "jwt_token_here",
+  "user": {
+    "id": "mongodb_id",
+    "Email": "john@example.com",
+    "Fullname": "John Doe",
+    "Phone": "9876543210",
+    "role": "user"
+  }
+}
+```
+
+#### User Login
+```
+POST /auth/user/login
+Content-Type: application/json
+
+{
+  "Email": "john@example.com",
+  "Password": "SecurePass123"
+}
+
+Response:
+{
+  "success": true,
+  "message": "User logged in successfully",
+  "token": "jwt_token_here",
+  "user": { ... }
+}
+```
+
+#### Get Current User
+```
+GET /auth/me
+Authorization: Bearer <token>
+
+Response:
+{
+  "success": true,
+  "message": "User data retrieved",
+  "user": { ... }
+}
+```
+
+#### User Logout
+```
+POST /auth/logout
+Authorization: Bearer <token>
+
+Response:
+{
+  "success": true,
+  "message": "Logged out successfully"
+}
+```
+
+### Admin Endpoints
+
+#### Admin Registration
+```
+POST /auth/admin/signup
+Content-Type: application/json
+
+{
+  "Fullname": "Admin Name",
+  "Email": "admin@example.com",
+  "Password": "AdminPass123"
+}
+
+Note: Only one admin allowed per instance
+```
+
+#### Admin Login
+```
+POST /auth/admin/login
+Content-Type: application/json
+
+{
+  "Email": "admin@example.com",
+  "Password": "AdminPass123"
+}
+```
+
+#### Check Admin Exists
+```
+GET /auth/admin/check
+
+Response:
+{
+  "success": true,
+  "exists": true/false,
+  "message": "Admin already exists / No admin found"
+}
+```
+
+#### Get Current Admin
+```
+GET /auth/admin/me
+Authorization: Bearer <admin_token>
+
+Response:
+{
+  "success": true,
+  "user": { ... }
+}
+```
+
+#### Admin Logout
+```
+POST /auth/admin/logout
+Authorization: Bearer <admin_token>
+
+Response:
+{
+  "success": true,
+  "message": "Admin logged out successfully"
+}
+```
+
+---
+
+## 💾 Database Schema
+
+### User Schema
+```javascript
+{
+  Fullname: String (required, min: 3 chars),
+  Email: String (required, unique, lowercase),
+  Phone: String (required, format: 10 digits),
+  Password: String (required, hashed, min: 8 chars),
+  role: String (default: 'user', enum: ['user', 'admin']),
+  cart: [{
+    product: ObjectId,
+    quantity: Number
+  }],
+  createdAt: Date (default: now),
+  updatedAt: Date
+}
+```
+
+### Admin Schema
+```javascript
+{
+  Fullname: String (required),
+  Email: String (required, unique),
+  Password: String (required, hashed, min: 8 chars),
+  role: String (default: 'admin', enum: ['admin', 'superadmin']),
+  createdAt: Date (default: now),
+  updatedAt: Date
+}
+```
+
+---
+
+## 🔐 Authentication
+
+### JWT Token
+- **Expiration:** 12 hours
+- **Signing:** JWT_SECRET from environment
+- **Storage:** localStorage (frontend), cookies (optional)
+- **Transmission:** Authorization header
+
+### Password Security
+- **Hashing Algorithm:** bcryptjs (salt rounds: 10)
+- **Never Returned:** Passwords excluded from API responses
+- **Validation:** Minimum 8 characters
+
+### Authorization
+- **User Routes:** Require valid user token
+- **Admin Routes:** Require valid admin token with admin/superadmin role
+- **Protected Routes:** Dashboard and profile routes protected
+
+---
+
+## 🔧 Environment Variables
+
+### Backend (.env)
+```env
+# MongoDB
+MONGODB_URI=mongodb://localhost:27017/fileenhancer
+
+# Server
+PORT=3000
+NODE_ENV=development
+
+# JWT
+JWT_SECRET=your_super_secret_jwt_key_change_in_production
+jwtExpiration=1d
+jwtRefreshExpiration=7d
+```
+
+### Frontend (.env)
+```env
+# API Endpoint
+VITE_API_URL=http://localhost:3000/api
+```
+
+---
+
+## 🎨 Key Components
+
+### Frontend Components
+
+#### Navigation (Navigation.jsx)
+- Top navigation bar
+- User profile menu
+- Logout button
+- Admin panel link
+
+#### Hero Section (Home.jsx)
+- Welcome message
+- Call-to-action buttons
+- Key selling points
+
+#### Upload Widget (Upload.jsx)
+- File input validation
+- Supported format display
+- Error handling
+- File type checking
+
+#### Dashboards
+- **UserDashboard:** User files and profile
+- **AdminDashboard:** User management and stats
+
+#### Authentication Pages
+- Clean, professional forms
+- Real-time validation
+- Error messages
+- Links to signup/login pages
+
+#### ProtectedRoute (ProtectedRoute.jsx)
+- Role-based access
+- Redirect to login if not authenticated
+- Redirect to unauthorized page if insufficient role
+
+---
+
+## 📝 Validation Rules
+
+### User Signup
+- ✓ Full Name: 3+ characters
+- ✓ Email: Valid format
+- ✓ Phone: Exactly 10 digits
+- ✓ Password: 8+ characters
+- ✓ Password Match: Must confirm password
+
+### User Login
+- ✓ Email: Valid format
+- ✓ Password: 8+ characters
+
+### Admin Signup
+- ✓ Full Name: 3+ characters
+- ✓ Email: Valid format
+- ✓ Password: 8+ characters
+- ✓ Only 1 admin allowed
+
+---
+
+## 🎯 Supported File Formats
+
+### Video Formats
+- MP4 (video/mp4)
+- MOV (video/quicktime)
+- AVI (video/x-msvideo)
+- MKV (video/x-matroska)
+- WEBM (video/webm)
+- PRORES (video/x-prores)
+- HEVC (video/x-h265)
+
+### Image Formats
+- JPEG (image/jpeg)
+- PNG (image/png)
+- GIF (image/gif)
+- WEBP (image/webp)
+- SVG (image/svg+xml)
+
+---
+
+## 🚦 HTTP Status Codes
+
+| Code | Meaning |
+|------|---------|
+| 200 | OK - Request successful |
+| 201 | Created - Resource created |
+| 400 | Bad Request - Invalid input |
+| 401 | Unauthorized - Invalid credentials |
+| 403 | Forbidden - Insufficient permissions |
+| 404 | Not Found - Resource not found |
+| 500 | Server Error - Internal error |
+
+---
+
+## 🔄 Application Flow
+
+### User Journey
+1. Visit `/` (landing page)
+2. Click "Sign up" → `/user/signup`
+3. Fill form and submit
+4. Redirected to `/user/dashboard`
+5. Upload files and manage content
+6. Click logout to return home
+
+### Admin Journey
+1. Visit `/admin/signup`
+2. Register as admin (only once allowed)
+3. Redirected to `/admin/dashboard`
+4. Manage users and content
+5. Click logout to return home
+
+---
+
+## 🚀 Future Enhancements
+
+- [ ] File upload and storage (AWS S3 or local)
+- [ ] File processing pipeline
+- [ ] Payment integration for premium features
+- [ ] Email notifications
+- [ ] Two-factor authentication
+- [ ] User profile management
+- [ ] Advanced search and filtering
+- [ ] Analytics and reporting
+- [ ] Video transcoding
+- [ ] Rate limiting
+- [ ] API versioning
+- [ ] WebSocket for real-time updates
+- [ ] Mobile app (React Native)
+- [ ] Docker containerization
+
+---
+
+## 🤝 Contributing
+
+1. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+2. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+3. Push to the branch (`git push origin feature/AmazingFeature`)
+4. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the ISC License - see the LICENSE file for details.
+
+---
+
+## 📞 Support
+
+For issues or questions:
+1. Check the documentation files
+2. Review the console logs (browser DevTools for frontend, terminal for backend)
+3. Verify environment variables are set correctly
+4. Ensure MongoDB is running
+5. Check CORS and port configurations
+
+---
+
+## 🙏 Acknowledgments
+
+- Express.js for the robust backend framework
+- React for the modern UI library
+- MongoDB for flexible data storage
+- Vite for lightning-fast development
+- All open-source contributors
+
+---
+
+**Last Updated:** February 20, 2026  
+**Version:** 1.0.0  
+**Status:** Production Ready ✅
+
+---
+
+### Quick Start Commands
+
+```bash
+# Backend
+cd Backend && npm install && npm run dev
+
+# Frontend (new terminal)
+cd frontend && npm install && npm run dev
+
+# Visit http://localhost:5173
+```
+
+**Enjoy building with File-Enhancer! 🎉**
