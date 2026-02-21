@@ -1,8 +1,10 @@
 const express = require('express');
+const path = require('path');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const authRoutes = require('./Routes/auth.route');
 const videoRoutes = require('./Routes/video.route');
+const imgRoutes = require('./Routes/img.routes');
 const errorHandler = require('./Middleware/errorHandler');
 
 const app = express();
@@ -15,6 +17,9 @@ app.use(cors({
     credentials: true
 }));
 
+// Serve enhanced images statically
+app.use('/enhanced', express.static(path.join(__dirname, 'uploads/enhanced')));
+
 // Routes
 app.get('/', (req, res) => {
     res.send('Welcome to the File-Enhancer API');
@@ -22,6 +27,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/video', videoRoutes);
+app.use('/api/image', imgRoutes);
 
 // Global error handling middleware - catches all errors and returns JSON
 app.use(errorHandler);

@@ -51,6 +51,7 @@
 /* Responsive */
 @media (max-width: 1024px) {
   .processor-container {
+    width: 100%;
     padding: 6rem 2rem 3rem;
   }
 

@@ -1,7 +1,7 @@
 // ============================================================
 //  middlewares/errorHandler.js
-//  Global error handler — koi bhi unhandled error yahan aayega
-//  Multer ke errors bhi yahan handle honge
+//  Global error handler — koi bhi unhandled error yahan aayega aur JSON response ke saath client ko bheja jayega.
+//  Multer ke errors bhi yahan handle honge jaise file size limit aur wrong file type.
 // ============================================================
 
 const errorHandler = (err, req, res, next) => {

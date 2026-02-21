@@ -27,8 +27,10 @@ const ServiceDetail = () => {
       <Navigation />
       <div className="service-detail-container">
         <div className="service-detail-header">
-          <div className="service-icon-large">{service.icon}</div>
-          <h1>{service.title}</h1>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+            <div className="service-icon-large">{service.icon}</div>
+            <h1>{service.title}</h1>
+          </div>
           <div className="service-detail-description">
             <p>{service.fullDescription}</p>
           </div>
@@ -37,26 +39,6 @@ const ServiceDetail = () => {
         <div className="service-details-grid">
           <div className="upload-column">
             <Upload hideSelector={true} serviceId={service.id} operation={service.operation} />
-          </div>
-        </div>
-
-        {/* features & benefits now sit below upload in a horizontal row */}
-        <div className="features-benefits-row">
-          <div className="details-section">
-            <h3>✨ Features</h3>
-            <ul className="features-list">
-              {service.features.map((feature, index) => (
-                <li key={index}>{feature}</li>
-              ))}
-            </ul>
-          </div>
-          <div className="details-section">
-            <h3>🎯 Benefits</h3>
-            <ul className="benefits-list">
-              {service.benefits.map((benefit, index) => (
-                <li key={index}>{benefit}</li>
-              ))}
-            </ul>
           </div>
         </div>
       </div>

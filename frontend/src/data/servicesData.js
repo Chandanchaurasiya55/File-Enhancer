@@ -28,7 +28,7 @@ export const servicesData = [
     description: 'Elevate your footage with neural network-powered upscaling, noise reduction, and color grading that rivals professional studios.',
     operation: 'enhance',
     fullDescription: 'Transform your ordinary footage into professional-quality videos using our advanced AI and machine learning algorithms. Automatically enhance colors, reduce noise, and improve overall visual quality.',
-    formats: ['MP4', 'MOV', 'AVI', 'MKV', 'WEBM'],
+    formats: ['JPG', 'PNG', 'WEBP', 'GIF', 'SVG'],
     features: [
       'Neural network-powered enhancement',
       'Automatic noise reduction',

@@ -27,17 +27,6 @@
   animation: slideUp 1s ease-out 0.2s both;
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .hero-subtitle {
   font-size: 2rem;
   color: #a90006;

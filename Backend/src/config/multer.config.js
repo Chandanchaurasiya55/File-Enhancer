@@ -6,9 +6,15 @@
 
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
 
-const UPLOADS_DIR = path.join(__dirname, "..", "..", "uploads");
+const UPLOADS_DIR = path.join(__dirname, "..", "uploads");
+
+// Agar directory nahi hai toh create karo
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
 
 // ─── Storage config ───────────────────────────────────────────────────────────
 const storage = multer.diskStorage({

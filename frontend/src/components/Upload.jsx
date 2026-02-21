@@ -16,6 +16,19 @@ const Upload = ({ hideSelector = false, serviceId = null, operation = null }) =>
   const [processType, setProcessType] = useState(operation || searchParams.get('operation') || 'compress');
   const [result, setResult] = useState(null);
   const [selectedFormat, setSelectedFormat] = useState(null);
+  const [selectedFeatures, setSelectedFeatures] = useState([]);
+
+  // AI Enhancement features list
+  const enhancementFeatures = [
+    { id: 'upscale', icon: '📈', title: 'Image Upscaling', desc: 'Enlarge small photos without quality loss' },
+    { id: 'sharpen', icon: '✨', title: 'Blur Remove / Sharpen', desc: 'Clarify blurry photos and enhance facial details' },
+    { id: 'denoise', icon: '🔇', title: 'Noise Removal', desc: 'Clean dark and grainy photos, improve low-light images' },
+    { id: 'restore', icon: '🎨', title: 'Old Photo Restore', desc: 'Repair faded photos, remove scratches, colorize B&W' },
+    { id: 'bgremove', icon: '🎯', title: 'Background Remove', desc: 'Remove backgrounds and create transparent PNGs' },
+    { id: 'face', icon: '👤', title: 'Face Enhancement', desc: 'Smooth face, balance skin tone, enhance eyes' },
+    { id: 'color', icon: '🌈', title: 'Color Correction', desc: 'Adjust brightness, improve contrast, balance colors' },
+    { id: 'objremove', icon: '🚫', title: 'AI Object Remove', desc: 'Remove unwanted objects with AI precision' },
+  ];
 
   // Get service data if available
   const currentServiceId = serviceId || urlServiceId;
@@ -68,9 +81,11 @@ const Upload = ({ hideSelector = false, serviceId = null, operation = null }) =>
       setError('');
       console.log('Selected file:', file.name);
       
-      // Process video if it's a video file
+      // Process based on file type
       if (isValidVideo) {
         await processVideo(file);
+      } else if (isValidImage) {
+        await processImage(file);
       }
       
       // Reset input for future selections
@@ -164,7 +179,7 @@ const Upload = ({ hideSelector = false, serviceId = null, operation = null }) =>
         // Construct download info
         setResult({
           success: true,
-          message: '✅ Compression complete! Ready to download.',
+          message: 'Compression complete! Ready to download.',
           file: {
             originalSize: jobData.originalSize,
             compressedSize: jobData.compressedSize,
@@ -197,47 +212,99 @@ const Upload = ({ hideSelector = false, serviceId = null, operation = null }) =>
     document.body.removeChild(a);
   };
 
+  const processImage = async (file) => {
+    try {
+      setProcessing(true);
+      setProgress(0);
+      setResult(null);
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      // Pass selected features to the API
+      if (selectedFeatures && selectedFeatures.length > 0) {
+        formData.append('features', selectedFeatures.join(','));
+      }
+
+      // Use enhance endpoint for image enhancement
+      const endpoint = `${API}/image/enhance`;
+
+      console.log('📤 Uploading image to:', endpoint);
+      console.log('🎯 Selected features:', selectedFeatures);
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || data.message || `Processing failed with status ${response.status}`);
+      }
+
+      if (data.success && data.data && data.data.downloadUrl) {
+        console.log('✅ Image enhanced!', data);
+        setProgress(100);
+
+        // Parse sizes to calculate quality boost
+        const parseSize = (sizeStr) => {
+          const match = sizeStr.match(/(\d+\.?\d*)\s*(MB|KB)/i);
+          if (!match) return 0;
+          const size = parseFloat(match[1]);
+          const unit = match[2].toUpperCase();
+          return unit === 'MB' ? size * 1024 : size;
+        };
+
+        const originalSizeKB = parseSize(data.data.original.size);
+        const enhancedSizeKB = parseSize(data.data.enhanced.size);
+        
+        // Calculate change percentage
+        let qualityBoost = 0;
+        if (originalSizeKB > 0) {
+          const changePercent = ((enhancedSizeKB - originalSizeKB) / originalSizeKB * 100);
+          // Cap between -99% and 99% for realistic display
+          qualityBoost = Math.max(-99, Math.min(99, changePercent)).toFixed(1);
+        }
+
+        // Construct download info
+        setResult({
+          success: true,
+          message: 'Image enhancement complete! Ready to download.',
+          file: {
+            originalSize: data.data.original.size,
+            enhancedSize: data.data.enhanced.size,
+            sizeIncrease: qualityBoost,
+            downloadUrl: `${API.replace('/api', '')}${data.data.downloadUrl}`,
+            filename: data.data.filename
+          }
+        });
+      } else {
+        throw new Error(data.message || 'Unknown error occurred');
+      }
+    } catch (err) {
+      console.error('❌ Image processing error:', err);
+      setError(`❌ ${err.message}`);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   return (
     <section className="upload-section" id="upload">
       <div className="upload-container">
         <div className="upload-content">
-          <div className="upload-icon">📤</div>
-          <h2>Upload &amp; Process</h2>
-          <p>1. Pick compress or enhance → 2. Choose a format → 3. Upload file → 4. Download when done</p>
+          <div className="upload-icon">📤  <h2>Upload Your File</h2></div>
+          
 
-          {/* informational cards tied to current operation */}
-          <div className="upload-info-cards">
-            { (processType === 'compress' ?
-              [
-                'Compressing makes your files smaller for easy sharing.',
-                'Keep the quality high while saving storage space.'
-              ] :
-              [
-                'Enhancing brings out details and sharpness in your video.',
-                'Great for improving old or low‑resolution footage.'
-              ]
-            ).map((txt, idx) => (
-              <div key={idx} className="info-card">{txt}</div>
-            )) }
-          </div>
+          {!processing && !result && currentService && !selectedFormat && (
+            <div className="format-message">
+              <p>📋 Please select your file format first</p>
+            </div>
+          )}
           
           {!processing && !result && (
             <>
-              {showSelector && (
-                <div className="process-selector">
-                  <label htmlFor="processType">Pick an action:</label>
-                  <select 
-                    id="processType"
-                    value={processType} 
-                    onChange={(e) => setProcessType(e.target.value)}
-                    className="process-select"
-                  >
-                    <option value="compress">🗜️ Make file smaller</option>
-                    <option value="enhance">✨ Make quality better</option>
-                  </select>
-                </div>
-              )}
-
               {/* Format Selection */}
               {currentService && (
                 <div className="format-selection">
@@ -252,9 +319,42 @@ const Upload = ({ hideSelector = false, serviceId = null, operation = null }) =>
                       </button>
                     ))}
                   </div>
-                  {selectedFormat && (
-                    <p style={{ marginTop: '0.8rem', fontSize: '0.95rem', color: '#333' }}>
-                      Selected format: <strong>{selectedFormat}</strong>
+                </div>
+              )}
+
+              {/* AI Enhancement Features Selection */}
+              {currentServiceId === 'ai-enhancement' && (
+                <div className="feature-selection">
+                  <h3>🎯 Choose Enhancement Features</h3>
+                  <p className="feature-subtitle">Select the features you want to apply to your image</p>
+                  <div className="features-grid">
+                    {enhancementFeatures.map((feature) => (
+                      <div 
+                        key={feature.id}
+                        className="feature-card"
+                        onClick={() => {
+                          setSelectedFeatures(prev => 
+                            prev.includes(feature.id)
+                              ? prev.filter(f => f !== feature.id)
+                              : [...prev, feature.id]
+                          );
+                        }}
+                      >
+                        <input 
+                          type="checkbox" 
+                          checked={selectedFeatures.includes(feature.id)}
+                          onChange={() => {}}
+                          style={{ cursor: 'pointer' }}
+                        />
+                        <span className="feature-icon">{feature.icon}</span>
+                        <h4>{feature.title}</h4>
+                        <p>{feature.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                  {selectedFeatures.length === 0 && (
+                    <p style={{ color: '#a90006', marginTop: '1rem', fontWeight: '600' }}>
+                      ⚠️ Please select at least one feature
                     </p>
                   )}
                 </div>
@@ -264,9 +364,9 @@ const Upload = ({ hideSelector = false, serviceId = null, operation = null }) =>
               <button
                 className="upload-btn"
                 onClick={handleChooseVideo}
-                disabled={currentService && !selectedFormat}
+                disabled={currentService && !selectedFormat || (currentServiceId === 'ai-enhancement' && selectedFeatures.length === 0)}
               >
-                {currentService ? 'Upload file' : 'Choose your file'}
+                {currentService ? 'Upload & Process' : 'Choose your file'}
               </button>
             </>
           )}
@@ -308,8 +408,10 @@ const Upload = ({ hideSelector = false, serviceId = null, operation = null }) =>
 
           {result && result.success && (
             <div className="result-container">
-              <div className="success-icon">✅</div>
-              <h3>{result.message}</h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem', justifyContent: 'center' }}>
+                <div className="success-icon">✅</div>
+                <h3 style={{ margin: 0 }}>{result.message}</h3>
+              </div>
               <div className="file-stats">
                 {processType === 'compress' ? (
                   <>
