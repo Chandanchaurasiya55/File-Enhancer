@@ -1,682 +1,285 @@
-const express = require('express');
-const ffmpeg = require('fluent-ffmpeg');
-const ffmpegStatic = require('ffmpeg-static');
-const ffprobeStatic = require('ffprobe-static');
-const fs = require('fs');
-const path = require('path');
-const multer = require('multer');
+// ============================================================
+//  Controller/video.controller.js
+//  Sirf controller logic — compressVideo, getJobStatus, downloadVideo, cleanupOldFiles
+// ============================================================
 
-// Set FFmpeg and FFprobe paths from the installed packages
+const ffmpeg = require("fluent-ffmpeg");
+const ffmpegStatic = require("ffmpeg-static");
+const ffprobeStatic = require("ffprobe-static");
+const path = require("path");
+const fs = require("fs");
+const { v4: uuidv4 } = require("uuid");
+const upload = require("../config/multer.config");
+
+// Configure ffmpeg with static binaries
 ffmpeg.setFfmpegPath(ffmpegStatic);
 ffmpeg.setFfprobePath(ffprobeStatic.path);
 
-console.log('✅ FFmpeg path configured:', ffmpegStatic ? 'SUCCESS' : 'FAILED');
-console.log('✅ FFprobe path configured:', ffprobeStatic.path ? 'SUCCESS' : 'FAILED');
+// ─── Directory paths ─────────────────────────────────────────────────────────
+const UPLOADS_DIR = path.join(__dirname, "..", "uploads");
+const OUTPUTS_DIR = path.join(__dirname, "..", "outputs");
 
-// Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, '../../uploads');
-if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-// Configure storage
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadsDir);
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-    }
+// Agar folders exist nahi karte toh automatically bana do
+[UPLOADS_DIR, OUTPUTS_DIR].forEach((dir) => {
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
-// File filter to only allow video files
-const fileFilter = (req, file, cb) => {
-    const allowedMimes = [
-        'video/mp4', 'video/mpeg', 'video/quicktime', 'video/x-msvideo',
-        'video/x-matroska', 'video/webm', 'video/x-flv', 'video/3gpp'
-    ];
-    
-    if (allowedMimes.includes(file.mimetype)) {
-        cb(null, true);
-    } else {
-        cb(new Error(`Invalid file type. Allowed types: MP4, MOV, AVI, MKV, WEBM, FLV, 3GP`), false);
-    }
+// ─── In-Memory Job Store ──────────────────────────────────────────────────────
+// Real app mein aap Redis ya MongoDB use kar sakte ho
+// Abhi ke liye simple object kaafi hai
+const jobs = {};
+//  Structure of each job:
+//  {
+//    status       : "processing" | "done" | "error",
+//    progress     : 0-100,
+//    outputFile   : "compressed_xyz.mp4" | null,
+//    originalName : "myvideo.mp4",
+//    originalSize : "25.30",        ← MB mein
+//    compressedSize: "11.20" | null, ← MB mein (done hone ke baad)
+//    error        : null | "some error message"
+//  }
+
+// ─── Helper: File size MB mein ────────────────────────────────────────────────
+const getFileSizeMB = (filePath) => {
+  const bytes = fs.statSync(filePath).size;
+  return (bytes / (1024 * 1024)).toFixed(2); // "25.30"
 };
 
-// Create multer instance with 2GB limit
-const upload = multer({
-    storage: storage,
-    fileFilter: fileFilter,
-    limits: { fileSize: 2 * 1024 * 1024 * 1024 } // 2GB
-});
+// ─── Helper: Purani file delete karo (try-catch safe) ────────────────────────
+const safeDelete = (filePath) => {
+  fs.unlink(filePath, (err) => {
+    if (err) console.warn(`[WARN] File delete failed: ${filePath}`);
+  });
+};
 
-/**
- * Get format settings based on input file extension
- * Maps input video formats to appropriate codec settings for Windows Media Player compatibility
- */
-function getFormatSettings(inputPath) {
-    const ext = path.extname(inputPath).toLowerCase();
-    
-    const formatMap = {
-        '.mp4': {
-            ext: '.mp4',
-            videoCodec: 'libx264',
-            audioCodec: 'aac',
-            options: [
-                '-preset medium',
-                '-crf 28',
-                '-pix_fmt yuv420p',           // YUV 4:2:0 pixel format for universal compatibility
-                '-profile:v main',             // H.264 Main profile (Windows compatible)
-                '-level 3.1',                  // H.264 level (will be overridden per function)
-                '-movflags +faststart'         // MP4 atoms at beginning for fast streaming
-            ]
-        },
-        '.mov': {
-            ext: '.mp4',                       // Convert MOV to MP4 for better compatibility
-            videoCodec: 'libx264',
-            audioCodec: 'aac',
-            options: [
-                '-preset medium',
-                '-crf 28',
-                '-pix_fmt yuv420p',
-                '-profile:v main',
-                '-level 3.1',
-                '-movflags +faststart'
-            ]
-        },
-        '.avi': {
-            ext: '.mp4',                       // Convert AVI to MP4
-            videoCodec: 'libx264',
-            audioCodec: 'aac',
-            options: [
-                '-preset medium',
-                '-crf 28',
-                '-pix_fmt yuv420p',
-                '-profile:v main',
-                '-level 3.1',
-                '-movflags +faststart'
-            ]
-        },
-        '.mkv': {
-            ext: '.mp4',                       // Convert MKV to MP4
-            videoCodec: 'libx264',
-            audioCodec: 'aac',
-            options: [
-                '-preset medium',
-                '-crf 28',
-                '-pix_fmt yuv420p',
-                '-profile:v main',
-                '-level 3.1',
-                '-movflags +faststart'
-            ]
-        },
-        '.webm': {
-            ext: '.mp4',                       // Convert WebM to MP4
-            videoCodec: 'libx264',
-            audioCodec: 'aac',
-            options: [
-                '-preset medium',
-                '-crf 28',
-                '-pix_fmt yuv420p',
-                '-profile:v main',
-                '-level 3.1',
-                '-movflags +faststart'
-            ]
-        },
-        '.flv': {
-            ext: '.mp4',                       // Convert FLV to MP4
-            videoCodec: 'libx264',
-            audioCodec: 'aac',
-            options: [
-                '-preset medium',
-                '-crf 28',
-                '-pix_fmt yuv420p',
-                '-profile:v main',
-                '-level 3.1',
-                '-movflags +faststart'
-            ]
-        },
-        '.3gp': {
-            ext: '.mp4',                       // Convert 3GP to MP4
-            videoCodec: 'libx264',
-            audioCodec: 'aac',
-            options: [
-                '-preset medium',
-                '-crf 28',
-                '-pix_fmt yuv420p',
-                '-profile:v main',
-                '-level 3.1',
-                '-movflags +faststart'
-            ]
-        }
-    };
-    
-    return formatMap[ext] || formatMap['.mp4']; // Default to MP4 settings
-}
-
-/**
- * Validate video file using FFprobe
- * Returns Promise that resolves if valid, rejects with error message if invalid
- */
-function validateVideoFile(inputPath) {
-    return new Promise((resolve, reject) => {
-        ffmpeg.ffprobe(inputPath, (err, metadata) => {
-            if (err) {
-                reject(new Error('Invalid or corrupted video file'));
-                return;
-            }
-            
-            // Check if file has video stream
-            const hasVideo = metadata.streams.some(s => s.codec_type === 'video');
-            if (!hasVideo) {
-                reject(new Error('No video stream found in file'));
-                return;
-            }
-            
-            resolve();
-        });
+// ══════════════════════════════════════════════════════════════════════════════
+//  1. compressVideo
+//  Route: POST /api/compress
+//  Body : multipart/form-data → field name = "video"
+//  Flow :
+//    → File multer ke through upload hogi (config/multer.config.js se)
+//    → Ek unique jobId banega
+//    → Job register hoga in-memory store mein
+//    → Client ko turant jobId milega (202 Accepted)
+//    → Background mein FFmpeg se compression chalegi
+// ══════════════════════════════════════════════════════════════════════════════
+const compressVideo = (req, res) => {
+  // Agar multer ne file nahi pakdi toh error do
+  if (!req.file) {
+    return res.status(400).json({
+      success: false,
+      error: "Koi file upload nahi hui. 'video' field mein MP4 bhejo.",
     });
-}
+  }
 
-/**
- * Upload video file
- * Returns the uploaded file info for further processing
- */
-function uploadFile(req, res) {
-    try {
-        if (!req.file) {
-            return res.status(400).json({
-                success: false,
-                message: 'No file uploaded'
-            });
-        }
+  // ── Job setup ──────────────────────────────────────────────────────────────
+  const jobId          = uuidv4();
+  const inputPath      = req.file.path;                          // uploaded file ka path
+  const originalName   = path.parse(req.file.originalname).name; // extension hata ke naam
+  const outputFilename = `compressed_${originalName}_${jobId}.mp4`;
+  const outputPath     = path.join(OUTPUTS_DIR, outputFilename);
 
-        res.status(200).json({
-            success: true,
-            file: {
-                filename: req.file.filename,
-                path: req.file.path,
-                mimeType: req.file.mimetype,
-                size: req.file.size
-            }
-        });
-    } catch (err) {
-        console.error('Error uploading file:', err);
-        res.status(500).json({
-            success: false,
-            message: 'Server error during file upload: ' + err.message
-        });
+  // Job ko store karo
+  jobs[jobId] = {
+    status       : "processing",
+    progress     : 0,
+    outputFile   : null,
+    originalName : req.file.originalname,
+    originalSize : getFileSizeMB(inputPath),
+    compressedSize: null,
+    error        : null,
+  };
+
+  console.log(`[JOB START] ${jobId} → ${req.file.originalname} (${jobs[jobId].originalSize} MB)`);
+
+  // ── Client ko turant respond karo ─────────────────────────────────────────
+  // 202 = "Request accepted, processing chal raha hai"
+  res.status(202).json({
+    success : true,
+    jobId,
+    message : "Compression shuru ho gayi! Status check karte raho.",
+    statusUrl  : `/api/status/${jobId}`,
+    downloadUrl: `/api/download/${jobId}`,
+  });
+
+  // ── FFmpeg Compression (background mein chalti hai) ───────────────────────
+  //
+  //  Settings explain:
+  //  libx264       → sabse popular video codec, sab jagah chalti hai
+  //  aac           → audio codec
+  //  audioBitrate  → 96k (original 128-192k hota hai → size kam hogi)
+  //  -crf 28       → Constant Rate Factor: 18=best quality, 51=worst
+  //                  28 pe ~40-55% size reduction hoti hai, quality acchi rehti hai
+  //  -preset fast  → encoding speed vs compression balance
+  //  -movflags +faststart → browser mein stream hone ke liye (download bhi fast)
+  //  scale iw*0.9  → 90% resolution (subtly kam, lekin size mein zyada farak)
+  //  yuv420p       → maximum device compatibility ke liye pixel format
+  //
+  ffmpeg(inputPath)
+    .videoCodec("libx264")
+    .audioCodec("aac")
+    .audioBitrate("96k")
+    .outputOptions([
+      "-crf 28",
+      "-preset fast",
+      "-movflags +faststart",
+      "-vf scale=iw*0.9:ih*0.9",
+      "-pix_fmt yuv420p",
+    ])
+    .output(outputPath)
+
+    // Progress update (percent 0-100)
+    .on("progress", (progress) => {
+      const pct = Math.round(progress.percent || 0);
+      jobs[jobId].progress = pct;
+      console.log(`[PROGRESS] ${jobId} → ${pct}%`);
+    })
+
+    // Compression complete!
+    .on("end", () => {
+      const compressedSize = getFileSizeMB(outputPath);
+      const originalSize   = jobs[jobId].originalSize;
+      const saved          = (((originalSize - compressedSize) / originalSize) * 100).toFixed(1);
+
+      jobs[jobId].status        = "done";
+      jobs[jobId].progress      = 100;
+      jobs[jobId].outputFile    = outputFilename;
+      jobs[jobId].compressedSize = compressedSize;
+
+      console.log(`[JOB DONE] ${jobId} → ${originalSize}MB → ${compressedSize}MB (${saved}% saved)`);
+
+      // Original uploaded file delete karo (disk space bachao)
+      safeDelete(inputPath);
+    })
+
+    // Koi error aaya (corrupted file, unsupported format, etc.)
+    .on("error", (err) => {
+      console.error(`[JOB ERROR] ${jobId} → ${err.message}`);
+      jobs[jobId].status = "error";
+      jobs[jobId].error  = err.message;
+
+      // Input file cleanup
+      safeDelete(inputPath);
+    })
+
+    .run(); // ← FFmpeg start!
+};
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  2. getJobStatus
+//  Route: GET /api/status/:jobId
+//  Use  : Frontend isko bar bar call karta hai (polling) progress jaanne ke liye
+//  Response:
+//    { status, progress, originalSize, compressedSize, ... }
+// ══════════════════════════════════════════════════════════════════════════════
+const getJobStatus = (req, res) => {
+  const { jobId } = req.params;
+  const job = jobs[jobId];
+
+  if (!job) {
+    return res.status(404).json({
+      success: false,
+      error: `Job ID '${jobId}' nahi mila. Shayad expire ho gaya ya galat ID hai.`,
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    jobId,
+    ...job, // status, progress, originalSize, compressedSize, error, etc.
+  });
+};
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  3. downloadVideo
+//  Route: GET /api/download/:jobId
+//  Use  : Job done hone ke baad user is URL se compressed video download kar sakta hai
+//  Note : res.download() automatically "Content-Disposition: attachment" header set karta hai
+//         jisse browser directly download shuru kar deta hai
+// ══════════════════════════════════════════════════════════════════════════════
+const downloadVideo = (req, res) => {
+  const { jobId } = req.params;
+  const job = jobs[jobId];
+
+  // Job exist nahi karta?
+  if (!job) {
+    return res.status(404).json({
+      success: false,
+      error: "Job nahi mila. Galat ID ya expire ho gaya.",
+    });
+  }
+
+  // Job abhi bhi chal raha hai?
+  if (job.status === "processing") {
+    return res.status(202).json({
+      success: false,
+      error: `Compression abhi chal rahi hai. Progress: ${job.progress}%`,
+    });
+  }
+
+  // Job fail hua tha?
+  if (job.status === "error") {
+    return res.status(500).json({
+      success: false,
+      error: `Compression fail hui thi: ${job.error}`,
+    });
+  }
+
+  // Output file disk pe hai?
+  const filePath = path.join(OUTPUTS_DIR, job.outputFile);
+  if (!fs.existsSync(filePath)) {
+    return res.status(410).json({
+      success: false,
+      error: "File expire ho gayi ya delete ho gayi. Dobara compress karo.",
+    });
+  }
+
+  // ✅ Sab theek hai → File download karo
+  const downloadName = `compressed_${job.originalName}`;
+  console.log(`[DOWNLOAD] ${jobId} → ${downloadName}`);
+
+  res.download(filePath, downloadName, (err) => {
+    if (err) {
+      console.error(`[DOWNLOAD ERROR] ${jobId} → ${err.message}`);
+      // Headers already send ho chuki hain toh res.json nahi kar sakte
     }
-}
+  });
+};
 
-/**
- * Compress video file
- * Reduces file size while maintaining acceptable quality (720p, 1500k bitrate)
- */
-async function compressVideo(req, res) {
-    try {
-        if (!req.file) {
-            return res.status(400).json({
-                success: false,
-                message: 'No video file uploaded'
-            });
+// ══════════════════════════════════════════════════════════════════════════════
+//  4. cleanupOldFiles  (utility function - cleanup.js ya yahan se call karo)
+//  Yeh function 1 ghante se purani output files delete karta hai
+//  server.js ya app.js mein setInterval ke saath call karo
+// ══════════════════════════════════════════════════════════════════════════════
+const cleanupOldFiles = () => {
+  const ONE_HOUR = 60 * 60 * 1000;
+  const now      = Date.now();
+
+  fs.readdir(OUTPUTS_DIR, (err, files) => {
+    if (err) return console.warn("[CLEANUP] outputs folder read nahi hua:", err.message);
+
+    files.forEach((file) => {
+      const filePath = path.join(OUTPUTS_DIR, file);
+      fs.stat(filePath, (err, stat) => {
+        if (!err && now - stat.mtimeMs > ONE_HOUR) {
+          safeDelete(filePath);
+          console.log(`[CLEANUP] Deleted old file: ${file}`);
+
+          // Memory mein bhi job clean karo (optional)
+          Object.keys(jobs).forEach((id) => {
+            if (jobs[id].outputFile === file) delete jobs[id];
+          });
         }
+      });
+    });
+  });
+};
 
-        const inputPath = req.file.path;
-        const filename = req.file.filename;
-        
-        // Get format settings based on input file extension
-        const formatSettings = getFormatSettings(inputPath);
-        const outputFilename = `compressed-${Date.now()}${formatSettings.ext}`;
-        const outputPath = path.join(uploadsDir, outputFilename);
-
-        console.log(`📁 Input format: ${path.extname(inputPath).toUpperCase()} → Output format: ${formatSettings.ext.toUpperCase()}`);
-
-        // First, validate the input video
-        try {
-            await validateVideoFile(inputPath);
-        } catch (err) {
-            if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
-            return res.status(400).json({
-                success: false,
-                message: '❌ ' + err.message
-            });
-        }
-
-        return new Promise((resolve, reject) => {
-            let command = ffmpeg(inputPath)
-                .videoCodec(formatSettings.videoCodec)
-                .audioCodec(formatSettings.audioCodec)
-                .videoBitrate('1500k')
-                .audioBitrate('128k')  // Increased from 96k to preserve audio quality
-                .size('?x720');  // Scale to 720p height, maintain aspect ratio
-
-            // Apply format-specific options
-            if (formatSettings.options && formatSettings.options.length > 0) {
-                command = command.outputOptions(formatSettings.options);
-            }
-
-            // Add audio normalization filter to prevent distortion and audio loss
-            command = command.audioFilter('anull')
-                .outputOptions([
-                    '-shortest',  // Ensure proper duration handling
-                    '-metadata:s:v:0',
-                    'rotate=0'
-                ]);
-
-            command
-                .on('start', (cmd) => {
-                    console.log('🎬 Compression started - processing video...');
-                    console.log(`   Codec: ${formatSettings.videoCodec} + ${formatSettings.audioCodec}`);
-                    console.log(`   Format: ${formatSettings.ext}`);
-                })
-                .on('progress', (progress) => {
-                    const percent = Math.round(progress.percent || 0);
-                    if (percent % 10 === 0) {
-                        console.log(`⏱️  Progress: ${percent}%`);
-                    }
-                })
-                .on('end', function() {
-                    Promise.resolve().then(async () => {
-                        console.log('✅ Compression finished - verifying output...');
-                        
-                        try {
-                            // Verify output file was created
-                            if (!fs.existsSync(outputPath)) {
-                                throw new Error('Output video file was not created');
-                            }
-
-                        // Get file sizes
-                        const outputStats = fs.statSync(outputPath);
-                        const outputSize = outputStats.size;
-
-                        // Check if file is too small (likely corrupted)
-                        if (outputSize < 500000) { // Less than 500KB - minimum viable size
-                            throw new Error(`Output file is too small (${(outputSize/1024).toFixed(2)}KB) - likely corrupted or processing failed. Try a different video.`);
-                        }
-                        
-                        // Validate output file is actually playable
-                        try {
-                            await validateVideoFile(outputPath);
-                        } catch (err) {
-                            throw new Error('Output video validation failed: ' + err.message + '. Output may be corrupted.');
-                        }
-
-                        const inputStats = fs.statSync(inputPath);
-                        const originalSize = inputStats.size / (1024 * 1024); // in MB
-                        const compressedSize = outputSize / (1024 * 1024); // in MB
-                        const reduction = ((1 - compressedSize / originalSize) * 100).toFixed(2);
-
-                        // Verify compressed file is smaller than original
-                        if (compressedSize > originalSize) {
-                            console.warn('⚠️  Compressed size is larger than original (encoding inefficient)');
-                        }
-
-                        console.log(`📊 Original: ${originalSize.toFixed(2)}MB → Compressed: ${compressedSize.toFixed(2)}MB (${reduction}% reduction)`);
-                        console.log(`✅ Format: ${formatSettings.ext.toUpperCase()} - Windows Media Player compatible`);
-
-                        // Delete original file
-                        try { fs.unlinkSync(inputPath); } catch(e) {}
-
-                        res.status(200).json({
-                            success: true,
-                            message: 'Video compressed successfully! 🎉 (Windows Media Player compatible)',
-                            file: {
-                                filename: outputFilename,
-                                originalSize: originalSize.toFixed(2),
-                                compressedSize: compressedSize.toFixed(2),
-                                sizeReduction: reduction,
-                                downloadUrl: `/api/video/download/${outputFilename}`
-                            }
-                        });
-                        resolve();
-                    } catch (err) {
-                        console.error('❌ Error verifying compressed file:', err.message);
-                        if (fs.existsSync(inputPath)) {
-                            try { fs.unlinkSync(inputPath); } catch(e) {}
-                        }
-                        if (fs.existsSync(outputPath)) {
-                            try { fs.unlinkSync(outputPath); } catch(e) {}
-                        }
-                        res.status(500).json({
-                            success: false,
-                            message: 'Error processing compressed video: ' + err.message
-                        });
-                        reject(err);
-                    }
-                    });  // End of Promise.resolve().then(async)
-                })
-                .on('error', (err) => {
-                    console.error('❌ FFmpeg compression error:', err.message);
-                    
-                    // Clean up files
-                    if (fs.existsSync(inputPath)) {
-                        try { fs.unlinkSync(inputPath); } catch(e) {}
-                    }
-                    if (fs.existsSync(outputPath)) {
-                        try { fs.unlinkSync(outputPath); } catch(e) {}
-                    }
-                    
-                    // Friendly error message
-                    let errorMsg = err.message;
-                    if (err.message.includes('Cannot find ffmpeg')) {
-                        errorMsg = '❌ FFmpeg is not installed. Please restart the server.';
-                    } else if (err.message.includes('Invalid data found') || err.message.includes('codec')) {
-                        errorMsg = '❌ The uploaded video file is corrupted or has an unsupported codec. Try another video.';
-                    } else if (err.message.includes('ENOSPC')) {
-                        errorMsg = '❌ Not enough disk space for compression. Free up space and try again.';
-                    } else if (err.message.includes('Unknown encoder')) {
-                        errorMsg = '❌ Codec not supported for this format. Please try a different video format.';
-                    }
-                    
-                    res.status(500).json({
-                        success: false,
-                        message: errorMsg
-                    });
-                    reject(err);
-                })
-                .save(outputPath);
-        });
-    } catch (err) {
-        console.error('❌ compressVideo error:', err);
-        return res.status(500).json({
-            success: false,
-            message: 'Server error while compressing video: ' + err.message
-        });
-    }
-}
-
-/**
- * Enhance video file
- * Improves video quality with better bitrate and resolution (1080p, 6000k bitrate)
- */
-async function enhanceVideo(req, res) {
-    try {
-        if (!req.file) {
-            return res.status(400).json({
-                success: false,
-                message: 'No video file uploaded'
-            });
-        }
-
-        const inputPath = req.file.path;
-        const filename = req.file.filename;
-        
-        // Get format settings based on input file extension
-        const formatSettings = getFormatSettings(inputPath);
-        const outputFilename = `enhanced-${Date.now()}${formatSettings.ext}`;
-        const outputPath = path.join(uploadsDir, outputFilename);
-
-        console.log(`📁 Input format: ${path.extname(inputPath).toUpperCase()} → Output format: ${formatSettings.ext.toUpperCase()}`);
-
-        // First, validate the input video
-        try {
-            await validateVideoFile(inputPath);
-        } catch (err) {
-            if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
-            return res.status(400).json({
-                success: false,
-                message: '❌ ' + err.message
-            });
-        }
-
-        return new Promise((resolve, reject) => {
-            let command = ffmpeg(inputPath)
-                .videoCodec(formatSettings.videoCodec)
-                .audioCodec(formatSettings.audioCodec)
-                .videoBitrate('6000k')
-                .audioBitrate('192k')  // Increased from 160k for better audio quality
-                .size('?x1080');  // Scale to 1080p height, maintain aspect ratio
-
-            // Apply format-specific options with higher quality for enhancement
-            const enhanceOptions = [
-                '-preset medium',
-                '-crf 20',                     // Lower CRF = better quality (20 vs 28)
-                '-pix_fmt yuv420p',            // YUV 4:2:0 pixel format for universal compatibility
-                '-profile:v main',             // H.264 Main profile (Windows compatible)
-                '-level 4.1',                  // H.264 level 4.1 for better quality support
-                '-movflags +faststart',        // MP4 atoms at beginning for fast streaming
-                '-shortest'                    // Ensure proper duration handling
-            ];
-
-            if (enhanceOptions && enhanceOptions.length > 0) {
-                command = command.outputOptions(enhanceOptions);
-            }
-
-            // Add audio normalization filter to prevent distortion and audio loss
-            command = command.audioFilter('anull')
-                .outputOptions([
-                    '-metadata:s:v:0',
-                    'rotate=0'
-                ]);
-
-            command
-                .on('start', (cmd) => {
-                    console.log('🎬 Enhancement started - improving video quality...');
-                    console.log(`   Codec: ${formatSettings.videoCodec} + ${formatSettings.audioCodec}`);
-                    console.log(`   Format: ${formatSettings.ext}`);
-                })
-                .on('progress', (progress) => {
-                    const percent = Math.round(progress.percent || 0);
-                    if (percent % 10 === 0) {
-                        console.log(`⏱️  Progress: ${percent}%`);
-                    }
-                })
-                .on('end', function() {
-                    Promise.resolve().then(async () => {
-                        console.log('✅ Enhancement finished - verifying output...');
-                        
-                        try {
-                            // Verify output file was created
-                            if (!fs.existsSync(outputPath)) {
-                                throw new Error('Output video file was not created');
-                            }
-
-                        // Get file sizes
-                        const outputStats = fs.statSync(outputPath);
-                        const outputSize = outputStats.size;
-
-                        // Check if file is too small (likely corrupted)
-                        if (outputSize < 500000) { // Less than 500KB - minimum viable size
-                            throw new Error(`Output file is too small (${(outputSize/1024).toFixed(2)}KB) - likely corrupted or processing failed. Try a different video.`);
-                        }
-                        
-                        // Validate output file is actually playable
-                        try {
-                            await validateVideoFile(outputPath);
-                        } catch (err) {
-                            throw new Error('Output video validation failed: ' + err.message + '. Output may be corrupted.');
-                        }
-
-                        const inputStats = fs.statSync(inputPath);
-                        const originalSize = inputStats.size / (1024 * 1024); // in MB
-                        const enhancedSize = outputSize / (1024 * 1024); // in MB
-                        const sizeIncrease = ((enhancedSize / originalSize - 1) * 100).toFixed(2);
-
-                        console.log(`📊 Original: ${originalSize.toFixed(2)}MB → Enhanced: ${enhancedSize.toFixed(2)}MB (+${sizeIncrease}% quality)`);
-                        console.log(`✅ Format: ${formatSettings.ext.toUpperCase()} - Windows Media Player compatible`);
-
-                        // Delete original file
-                        try { fs.unlinkSync(inputPath); } catch(e) {}
-
-                        res.status(200).json({
-                            success: true,
-                            message: 'Video enhanced successfully! 🎉 (Windows Media Player compatible)',
-                            file: {
-                                filename: outputFilename,
-                                originalSize: originalSize.toFixed(2),
-                                enhancedSize: enhancedSize.toFixed(2),
-                                sizeIncrease: sizeIncrease,
-                                downloadUrl: `/api/video/download/${outputFilename}`
-                            }
-                        });
-                        resolve();
-                    } catch (err) {
-                        console.error('❌ Error verifying enhanced file:', err.message);
-                        if (fs.existsSync(inputPath)) {
-                            try { fs.unlinkSync(inputPath); } catch(e) {}
-                        }
-                        if (fs.existsSync(outputPath)) {
-                            try { fs.unlinkSync(outputPath); } catch(e) {}
-                        }
-                        res.status(500).json({
-                            success: false,
-                            message: 'Error processing enhanced video: ' + err.message
-                        });
-                        reject(err);
-                    }
-                    });  // End of Promise.resolve().then(async)
-                })
-                .on('error', (err) => {
-                    console.error('❌ FFmpeg enhancement error:', err.message);
-                    
-                    // Clean up files
-                    if (fs.existsSync(inputPath)) {
-                        try { fs.unlinkSync(inputPath); } catch(e) {}
-                    }
-                    if (fs.existsSync(outputPath)) {
-                        try { fs.unlinkSync(outputPath); } catch(e) {}
-                    }
-                    
-                    // Friendly error message
-                    let errorMsg = err.message;
-                    if (err.message.includes('Cannot find ffmpeg')) {
-                        errorMsg = '❌ FFmpeg is not installed. Please restart the server.';
-                    } else if (err.message.includes('Invalid data found') || err.message.includes('codec')) {
-                        errorMsg = '❌ The uploaded video file is corrupted or has an unsupported codec. Try another video.';
-                    } else if (err.message.includes('ENOSPC')) {
-                        errorMsg = '❌ Not enough disk space for enhancement. Free up space and try again.';
-                    } else if (err.message.includes('Unknown encoder')) {
-                        errorMsg = '❌ Codec not supported for this format. Please try a different video format.';
-                    }
-                    
-                    res.status(500).json({
-                        success: false,
-                        message: errorMsg
-                    });
-                    reject(err);
-                })
-                .save(outputPath);
-        });
-    } catch (err) {
-        console.error('❌ enhanceVideo error:', err);
-        return res.status(500).json({
-            success: false,
-            message: 'Server error while enhancing video: ' + err.message
-        });
-    }
-}
-
-/**
- * Download processed video file
- */
-function downloadVideo(req, res) {
-    try {
-        const { filename } = req.params;
-        
-        // Validate filename to prevent directory traversal attacks
-        if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid filename'
-            });
-        }
-
-        const filePath = path.join(uploadsDir, filename);
-
-        if (!fs.existsSync(filePath)) {
-            return res.status(404).json({
-                success: false,
-                message: 'File not found'
-            });
-        }
-
-        res.download(filePath, filename, (err) => {
-            if (err) {
-                console.error('Download error:', err);
-                if (!res.headersSent) {
-                    res.status(500).json({
-                        success: false,
-                        message: 'Error downloading file'
-                    });
-                }
-            }
-        });
-    } catch (err) {
-        console.error('downloadVideo error:', err);
-        return res.status(500).json({
-            success: false,
-            message: 'Server error while downloading video'
-        });
-    }
-}
-
-/**
- * Get video info
- */
-function getVideoInfo(req, res) {
-    try {
-        if (!req.file) {
-            return res.status(400).json({
-                success: false,
-                message: 'No video file uploaded'
-            });
-        }
-
-        const inputPath = req.file.path;
-
-        ffmpeg.ffprobe(inputPath, (err, metadata) => {
-            if (err) {
-                console.error('Probe error:', err);
-                return res.status(500).json({
-                    success: false,
-                    message: 'Error reading video information'
-                });
-            }
-
-            const videoStream = metadata.streams.find(s => s.codec_type === 'video');
-            const audioStream = metadata.streams.find(s => s.codec_type === 'audio');
-
-            res.json({
-                success: true,
-                info: {
-                    duration: metadata.format.duration,
-                    size: (metadata.format.size / (1024 * 1024)).toFixed(2),
-                    bitrate: (metadata.format.bit_rate / 1000).toFixed(0),
-                    video: {
-                        codec: videoStream?.codec_name,
-                        width: videoStream?.width,
-                        height: videoStream?.height,
-                        fps: eval(videoStream?.r_frame_rate)
-                    },
-                    audio: {
-                        codec: audioStream?.codec_name,
-                        sampleRate: audioStream?.sample_rate,
-                        channels: audioStream?.channels
-                    }
-                }
-            });
-
-            // Delete temporary file
-            if (fs.existsSync(inputPath)) {
-                fs.unlinkSync(inputPath);
-            }
-        });
-    } catch (err) {
-        console.error('getVideoInfo error:', err);
-        return res.status(500).json({
-            success: false,
-            message: 'Server error while getting video info'
-        });
-    }
-}
-
+// ── Export karo ──────────────────────────────────────────────────────────────
 module.exports = {
-    upload,
-    uploadFile,
-    compressVideo,
-    enhanceVideo,
-    downloadVideo,
-    getVideoInfo
+  upload,
+  compressVideo,
+  getJobStatus,
+  downloadVideo,
+  cleanupOldFiles,
 };

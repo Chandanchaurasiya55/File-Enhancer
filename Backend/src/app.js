@@ -3,6 +3,7 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const authRoutes = require('./Routes/auth.route');
 const videoRoutes = require('./Routes/video.route');
+const errorHandler = require('./Middleware/errorHandler');
 
 const app = express();
 
@@ -23,26 +24,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/video', videoRoutes);
 
 // Global error handling middleware - catches all errors and returns JSON
-app.use((err, req, res, next) => {
-    console.error('Error:', err);
-    
-    // Set response type to JSON
-    res.setHeader('Content-Type', 'application/json');
-    
-    // Handle multer errors specifically
-    if (err.field === 'video') {
-        return res.status(400).json({
-            success: false,
-            message: 'File upload error: ' + (err.message || 'Invalid file format or size')
-        });
-    }
-    
-    // Handle all other errors
-    res.status(err.status || 500).json({
-        success: false,
-        message: err.message || 'Server error occurred'
-    });
-});
+app.use(errorHandler);
 
 // 404 handler - must be after all routes
 app.use((req, res) => {

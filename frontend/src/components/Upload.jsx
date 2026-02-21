@@ -78,6 +78,46 @@ const Upload = ({ hideSelector = false, serviceId = null, operation = null }) =>
     }
   };
 
+  const pollJobStatus = async (jobId) => {
+    const statusUrl = `${API}/video/status/${jobId}`;
+    const maxAttempts = 300; // 5 minutes max
+    let attempts = 0;
+
+    return new Promise((resolve, reject) => {
+      const pollInterval = setInterval(async () => {
+        attempts++;
+
+        try {
+          const response = await fetch(statusUrl);
+          const data = await response.json();
+
+          if (!response.ok) {
+            clearInterval(pollInterval);
+            reject(new Error(data.error || 'Failed to check job status'));
+            return;
+          }
+
+          console.log('[Status]', data.status, 'Progress:', data.progress);
+          setProgress(data.progress || 0);
+
+          if (data.status === 'done') {
+            clearInterval(pollInterval);
+            resolve(data);
+          } else if (data.status === 'error') {
+            clearInterval(pollInterval);
+            reject(new Error(data.error || 'Compression failed'));
+          } else if (attempts >= maxAttempts) {
+            clearInterval(pollInterval);
+            reject(new Error('Processing timeout - took too long'));
+          }
+        } catch (err) {
+          clearInterval(pollInterval);
+          reject(err);
+        }
+      }, 1000); // Poll every 1 second
+    });
+  };
+
   const processVideo = async (file) => {
     try {
       setProcessing(true);
@@ -94,7 +134,7 @@ const Upload = ({ hideSelector = false, serviceId = null, operation = null }) =>
         ? `${API}/video/compress`
         : `${API}/video/enhance`;
 
-      console.log('Uploading to:', endpoint);
+      console.log('📤 Uploading to:', endpoint);
 
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -110,22 +150,36 @@ const Upload = ({ hideSelector = false, serviceId = null, operation = null }) =>
 
       const data = await response.json();
       
-      if (!response.ok) {
-        throw new Error(data.message || `Processing failed with status ${response.status}`);
-      }
-      
-      if (data.success) {
+      // 202 is "Accepted" - job is processing in background
+      if (response.status === 202 && data.success && data.jobId) {
+        console.log('✅ Job accepted! ID:', data.jobId);
+        setProgress(5);
+
+        // Poll the status endpoint until done
+        const jobData = await pollJobStatus(data.jobId);
+
+        console.log('✅ Job complete!', jobData);
         setProgress(100);
+
+        // Construct download info
         setResult({
           success: true,
-          message: data.message,
-          file: data.file
+          message: '✅ Compression complete! Ready to download.',
+          file: {
+            originalSize: jobData.originalSize,
+            compressedSize: jobData.compressedSize,
+            sizeReduction: (((jobData.originalSize - jobData.compressedSize) / jobData.originalSize) * 100).toFixed(1),
+            downloadUrl: `${API}/video/download/${jobData.jobId}`,
+            filename: `compressed_${jobData.originalName}`
+          }
         });
+      } else if (!response.ok) {
+        throw new Error(data.error || `Processing failed with status ${response.status}`);
       } else {
-        setError(`❌ ${data.message}`);
+        throw new Error(data.error || 'Unknown error occurred');
       }
     } catch (err) {
-      console.error('Processing error:', err);
+      console.error('❌ Processing error:', err);
       setError(`❌ ${err.message}`);
     } finally {
       setProcessing(false);
@@ -133,9 +187,11 @@ const Upload = ({ hideSelector = false, serviceId = null, operation = null }) =>
   };
 
   const downloadFile = (url, filename) => {
+    console.log('📥 Downloading from:', url);
     const a = document.createElement('a');
     a.href = url;
     a.download = filename;
+    a.target = '_blank';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
