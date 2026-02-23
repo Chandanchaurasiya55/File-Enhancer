@@ -1,21 +1,55 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { useSearchParams, useLocation, useParams } from 'react-router-dom';
+import { useSearchParams, useParams } from 'react-router-dom';
 import { servicesData } from '../data/servicesData';
 import '../styles/Upload.css';
 
 const API = import.meta.env.VITE_API_URL;
 
-const Upload = ({ hideSelector = false, serviceId = null, operation = null }) => {
+const Upload = ({ serviceId = null, operation = null }) => {
   const fileInputRef = useRef(null);
   const [searchParams] = useSearchParams();
-  const location = useLocation();
   const { serviceId: urlServiceId } = useParams();
+
   const [error, setError] = useState('');
   const [processing, setProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [processType, setProcessType] = useState(operation || searchParams.get('operation') || 'compress');
   const [result, setResult] = useState(null);
+
+  // helper for formatting a file size returned by backend
+  // backend sometimes gives a plain number (MB) for videos and
+  // a string with unit ("123 KB" / "1.2 MB") for images.
+  const formatSize = (size) => {
+    if (size == null) return "";
+    // handle strings first
+    if (typeof size === "string") {
+      const trimmed = size.trim();
+      // if the string already contains a unit just return it
+      if (/\b(KB|MB)\b/i.test(trimmed)) {
+        return trimmed;
+      }
+      // otherwise treat plain numbers as MB value
+      const num = parseFloat(trimmed);
+      if (!isNaN(num)) {
+        size = num; // fall through to numeric handling below
+      } else {
+        return trimmed; // unrecognized format, just return
+      }
+    }
+
+    // numeric path (size now is number)
+    const mb = parseFloat(size);
+    if (isNaN(mb)) return "";
+    if (mb < 1) {
+      // convert to kilobytes when less than 1MB
+      return `${(mb * 1024).toFixed(1)} KB`;
+    }
+    return `${mb.toFixed(2)} MB`;
+  };
   const [selectedFormat, setSelectedFormat] = useState(null);
+  // for conversion we also need explicit source/target selection
+  const [selectedFrom, setSelectedFrom] = useState('');
+  const [selectedTo, setSelectedTo] = useState('');
   const [selectedFeatures, setSelectedFeatures] = useState([]);
 
   // AI Enhancement features list
@@ -36,6 +70,18 @@ const Upload = ({ hideSelector = false, serviceId = null, operation = null }) =>
     ? servicesData.find(s => s.id === currentServiceId)
     : null;
 
+  // available individual formats for conversion service
+  const formatChoices = currentServiceId === 'format-conversion' && currentService
+    ? [...new Set(currentService.conversions.flatMap(c => c.split(' ↔ ').map(p => p.trim())))]
+    : [];
+
+  // reset combined format string when user modifies selections
+  useEffect(() => {
+    if (currentServiceId === 'format-conversion') {
+      setSelectedFormat(null);
+    }
+  }, [selectedFrom, selectedTo, currentServiceId]);
+
   // Get formats - either from service or default list
   const displayFormats = currentService?.formats || ['MP4', 'MOV', 'AVI', 'MKV', 'WEBM', 'PRORES', 'HEVC'];
 
@@ -53,14 +99,33 @@ const Upload = ({ hideSelector = false, serviceId = null, operation = null }) =>
     }
   }, [searchParams, operation]);
 
-  // Hide selector when on VideoProcessor page, service detail page or when hideSelector prop is true
-  const showSelector = !hideSelector && !location.pathname.includes('/process-video') && !location.pathname.includes('/service/');
+
 
   const handleChooseVideo = () => {
     setError('');
-    if (currentService && !selectedFormat) {
-      setError('❌ Please pick a format first.');
-      return;
+    if (currentService) {
+      if (currentServiceId === 'format-conversion') {
+        if (!selectedFrom || !selectedTo) {
+          setError('❌ Choose both source and target formats.');
+          return;
+        }
+        if (selectedFrom === selectedTo) {
+          setError('❌ Source and target formats must differ.');
+          return;
+        }
+        // ensure the pair is supported (any direction)
+        const pair = `${selectedFrom} ↔ ${selectedTo}`;
+        const reversePair = `${selectedTo} ↔ ${selectedFrom}`;
+        if (!currentService.conversions.includes(pair) && !currentService.conversions.includes(reversePair)) {
+          setError('❌ This conversion combination is not supported.');
+          return;
+        }
+        // construct combined string for backend
+        setSelectedFormat(pair);
+      } else if (!selectedFormat) {
+        setError('❌ Please pick a format first.');
+        return;
+      }
     }
     fileInputRef.current?.click();
   };
@@ -68,24 +133,29 @@ const Upload = ({ hideSelector = false, serviceId = null, operation = null }) =>
   const handleFileSelect = async (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      const isValidVideo = validVideoFormats.includes(file.type);
-      const isValidImage = validImageFormats.includes(file.type);
-      
-      if (!isValidVideo && !isValidImage) {
-        setError('❌ Invalid file format! Please upload only video or image files.');
-        // Reset input
-        fileInputRef.current.value = '';
-        return;
-      }
-      
-      setError('');
-      console.log('Selected file:', file.name);
-      
-      // Process based on file type
-      if (isValidVideo) {
-        await processVideo(file);
-      } else if (isValidImage) {
-        await processImage(file);
+      // format conversion skips the media-type validation and uses a generic endpoint
+      if (currentServiceId === 'format-conversion') {
+        await processFile(file);
+      } else {
+        const isValidVideo = validVideoFormats.includes(file.type);
+        const isValidImage = validImageFormats.includes(file.type);
+        
+        if (!isValidVideo && !isValidImage) {
+          setError('❌ Invalid file format! Please upload only video or image files.');
+          // Reset input
+          fileInputRef.current.value = '';
+          return;
+        }
+        
+        setError('');
+        console.log('Selected file:', file.name);
+        
+        // Process based on file type
+        if (isValidVideo) {
+          await processVideo(file);
+        } else if (isValidImage) {
+          await processImage(file);
+        }
       }
       
       // Reset input for future selections
@@ -212,6 +282,56 @@ const Upload = ({ hideSelector = false, serviceId = null, operation = null }) =>
     document.body.removeChild(a);
   };
 
+  const processFile = async (file) => {
+    try {
+      setProcessing(true);
+      setProgress(0);
+      setResult(null);
+
+      const formData = new FormData();
+      formData.append('file', file);
+      if (selectedFormat) {
+        formData.append('conversion', selectedFormat);
+      }
+
+      // generic conversion endpoint (backend should handle based on conversion pair)
+      const endpoint = `${API}/format/convert`;
+
+      console.log('📤 Uploading file to:', endpoint);
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || data.message || `Conversion failed with status ${response.status}`);
+      }
+
+      if (data.success && data.downloadUrl) {
+        console.log('✅ Conversion complete!', data);
+        setProgress(100);
+        setResult({
+          success: true,
+          message: 'Conversion complete! Ready to download.',
+          file: {
+            downloadUrl: data.downloadUrl,
+            filename: data.filename
+          }
+        });
+      } else {
+        throw new Error(data.error || 'Unknown error occurred');
+      }
+    } catch (err) {
+      console.error('❌ Conversion error:', err);
+      setError(`❌ ${err.message}`);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   const processImage = async (file) => {
     try {
       setProcessing(true);
@@ -297,7 +417,10 @@ const Upload = ({ hideSelector = false, serviceId = null, operation = null }) =>
           <div className="upload-icon">📤  <h2>Upload Your File</h2></div>
           
 
-          {!processing && !result && currentService && !selectedFormat && (
+          {!processing && !result && currentService && (
+            (currentServiceId !== 'format-conversion' && !selectedFormat) ||
+            (currentServiceId === 'format-conversion' && (!selectedFrom || !selectedTo))
+          ) && (
             <div className="format-message">
               <p>📋 Please select your file format first</p>
             </div>
@@ -306,7 +429,7 @@ const Upload = ({ hideSelector = false, serviceId = null, operation = null }) =>
           {!processing && !result && (
             <>
               {/* Format Selection */}
-              {currentService && (
+              {currentService && currentServiceId !== 'format-conversion' && (
                 <div className="format-selection">
                   <div className="format-buttons">
                     {displayFormats.map((format) => (
@@ -318,6 +441,43 @@ const Upload = ({ hideSelector = false, serviceId = null, operation = null }) =>
                         {format}
                       </button>
                     ))}
+                  </div>
+                </div>
+              )}
+
+              {/* conversion controls for format-conversion service */}
+              {currentServiceId === 'format-conversion' && (
+                <div className="format-selection conversion-row">
+                  <div className="conversion-field">
+                    <label htmlFor="from-select" 
+                    style={{ fontSize: '14px', fontWeight: '700', color: '#a90006'}} >
+                    From
+                    </label>
+                    <select
+                      id="from-select"
+                      className='format-select'
+                      value={selectedFrom}
+                      onChange={e => setSelectedFrom(e.target.value)}
+                    >
+                      <option value="" disabled>-- choose source format --</option>
+                      {formatChoices.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                    </select>
+                  </div>
+
+                  <div className="conversion-field">
+                    <label htmlFor="to-select" 
+                    style={{ fontSize: '14px', fontWeight: '700', color: '#a90006'}}>
+                      To
+                      </label>
+                    <select
+                      id="to-select"
+                      className='format-select'
+                      value={selectedTo}
+                      onChange={e => setSelectedTo(e.target.value)}
+                    >
+                      <option value="" disabled>-- choose target format --</option>
+                      {formatChoices.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                    </select>
                   </div>
                 </div>
               )}
@@ -374,7 +534,11 @@ const Upload = ({ hideSelector = false, serviceId = null, operation = null }) =>
           <input
             ref={fileInputRef}
             type="file"
-            accept="video/*,image/*"
+            accept={
+              currentServiceId === 'format-conversion'
+                ? '*/*'
+                : 'video/*,image/*'
+            }
             onChange={handleFileSelect}
             style={{ display: 'none' }}
           />
@@ -398,7 +562,12 @@ const Upload = ({ hideSelector = false, serviceId = null, operation = null }) =>
           {processing && (
             <div className="processing-container">
               <div className="spinner"></div>
-              <p>Processing your {processType === 'compress' ? 'compression' : 'enhancement'}...</p>
+              <p>
+                Processing your {processType === 'compress' ? 'compression'
+                  : processType === 'enhance' ? 'enhancement'
+                  : processType === 'convert' ? 'conversion'
+                  : ''}...
+              </p>
               <div className="progress-bar">
                 <div className="progress-fill" style={{ width: `${progress}%` }}></div>
               </div>
@@ -417,32 +586,34 @@ const Upload = ({ hideSelector = false, serviceId = null, operation = null }) =>
                   <>
                     <div className="stat">
                       <span className="stat-label">Original Size:</span>
-                      <span className="stat-value">{result.file.originalSize} MB</span>
+                      <span className="stat-value">{formatSize(result.file.originalSize)}</span>
                     </div>
                     <div className="stat">
                       <span className="stat-label">Compressed Size:</span>
-                      <span className="stat-value">{result.file.compressedSize} MB</span>
+                      <span className="stat-value">{formatSize(result.file.compressedSize)}</span>
                     </div>
                     <div className="stat highlight">
                       <span className="stat-label">Size Reduction:</span>
                       <span className="stat-value">{result.file.sizeReduction}%</span>
                     </div>
                   </>
-                ) : (
+                ) : processType === 'enhance' ? (
                   <>
                     <div className="stat">
                       <span className="stat-label">Original Size:</span>
-                      <span className="stat-value">{result.file.originalSize} MB</span>
+                      <span className="stat-value">{formatSize(result.file.originalSize)}</span>
                     </div>
                     <div className="stat">
                       <span className="stat-label">Enhanced Size:</span>
-                      <span className="stat-value">{result.file.enhancedSize} MB</span>
+                      <span className="stat-value">{formatSize(result.file.enhancedSize)}</span>
                     </div>
                     <div className="stat highlight">
                       <span className="stat-label">Quality Boost:</span>
                       <span className="stat-value">+{result.file.sizeIncrease}%</span>
                     </div>
                   </>
+                ) : (
+                  <p>Your file is ready for download.</p>
                 )}
               </div>
               <button 

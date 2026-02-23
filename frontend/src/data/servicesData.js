@@ -43,87 +43,35 @@ export const servicesData = [
     ]
   },
   {
-    id: 'upscaler',
-    icon: '📈',
-    title: 'Up Scaler',
-    description: 'Transform your videos to higher resolutions with AI-powered upscaling. Enlarge 720p to 4K with stunning clarity and detail preservation.',
-    operation: 'enhance',
-    fullDescription: 'Use cutting-edge AI upscaling technology to increase video resolution without quality loss. Convert 480p to 1080p, 720p to 4K, and beyond with clarity that rivals native recordings.',
-    formats: ['MP4', 'MOV', 'AVI', 'MKV'],
-    features: [
-      'AI-powered resolution enhancement',
-      '720p to 4K conversion',
-      'Detail preservation technology',
-      'Real-time preview'
-    ],
-    benefits: [
-      'Repurpose old footage',
-      'Create 4K versions of existing videos',
-      'Improve video for modern displays',
-      'No artifacts or quality loss'
-    ]
-  },
-  {
     id: 'format-conversion',
     icon: '⚡',
     title: 'Format Conversion',
-    description: 'Seamlessly convert between any video format. Lightning-fast processing with zero quality loss.',
-    operation: 'compress',
-    fullDescription: 'Convert your videos between any format with lightning-fast processing and zero quality loss. Support for all major video formats ensures compatibility across all platforms and devices.',
-    formats: ['MP4', 'MOV', 'AVI', 'MKV', 'WEBM', 'PRORES', 'HEVC'],
+    description: 'Seamlessly convert between a wide variety of document and office file formats.',
+    operation: 'convert',
+    fullDescription: 'Select the conversion type you need, then upload your file to get it converted instantly.',
+    // list of conversion pairs offered by this service
+    conversions: [
+      'PDF ↔ Word',
+      'PDF ↔ Excel',
+      'PDF ↔ PowerPoint',
+      'Office Files ↔ Image (JPG, PNG)',
+      'Office Files ↔ HTML',
+      'Office Files ↔ XML',
+      'Office Files ↔ OpenDocument (ODT, ODS, ODP)'
+    ],
+    // leave formats empty since selection is handled separately
+    formats: [],
     features: [
-      'All major format support',
-      'Zero quality loss conversion',
-      'Batch conversion capability',
-      'Custom bitrate options'
+      'Bidirectional conversions',
+      'Support for all popular document formats',
+      'Fast, cloud‑based processing',
+      'No quality loss'
     ],
     benefits: [
-      'Universal compatibility',
-      'Perfect for different platforms',
-      'Save time on conversions',
-      'Professional quality output'
+      'Work with any platform or application',
+      'Avoid expensive desktop software',
+      'Perfect for sharing and archiving',
+      'Streamline your workflow'
     ]
   },
-  {
-    id: 'effects-transitions',
-    icon: '🎭',
-    title: 'Effects & Transitions',
-    description: 'Hollywood-quality visual effects and transitions. Make every cut, every transition a work of art.',
-    operation: 'enhance',
-    fullDescription: 'Add professional Hollywood-quality effects and transitions to your videos. Choose from hundreds of preset effects or customize your own for truly unique content.',
-    formats: ['MP4', 'MOV', 'AVI', 'MKV'],
-    features: [
-      '100+ professional effects',
-      '50+ smooth transitions',
-      'Customizable parameters',
-      'Real-time preview'
-    ],
-    benefits: [
-      'Cinematic quality production',
-      'Faster editing workflow',
-      'Professional appearance',
-      'Increase viewer engagement'
-    ]
-  },
-  {
-    id: 'watermark-removal',
-    icon: '🚫',
-    title: 'Water Mark Removal',
-    description: 'Remove unwanted watermarks and logos from your videos effortlessly. Advanced AI technology detects and erases watermarks while preserving the background.',
-    operation: 'enhance',
-    fullDescription: 'Automatically detect and remove watermarks, logos, and unwanted graphics from your videos using advanced AI inpainting technology. The background is intelligently reconstructed.',
-    formats: ['MP4', 'MOV', 'AVI', 'MKV'],
-    features: [
-      'AI-powered watermark detection',
-      'Automatic logo removal',
-      'Intelligent background reconstruction',
-      'Multi-watermark support'
-    ],
-    benefits: [
-      'Remove restrictions from footage',
-      'Clean professional appearance',
-      'Intelligent background restoration',
-      'Works on any size watermark'
-    ]
-  }
 ];

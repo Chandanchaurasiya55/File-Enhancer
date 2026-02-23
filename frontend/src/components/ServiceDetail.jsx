@@ -38,7 +38,7 @@ const ServiceDetail = () => {
 
         <div className="service-details-grid">
           <div className="upload-column">
-            <Upload hideSelector={true} serviceId={service.id} operation={service.operation} />
+            <Upload serviceId={service.id} operation={service.operation} />
           </div>
         </div>
       </div>
