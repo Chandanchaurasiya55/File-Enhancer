@@ -1,5 +1,6 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { useSearchParams, useParams } from 'react-router-dom';
+import React, { useRef, useState, useEffect, useContext } from 'react';
+import { useSearchParams, useParams, Link } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 import { servicesData } from '../data/servicesData';
 import '../styles/Upload.css';
 
@@ -9,6 +10,7 @@ const Upload = ({ serviceId = null, operation = null }) => {
   const fileInputRef = useRef(null);
   const [searchParams] = useSearchParams();
   const { serviceId: urlServiceId } = useParams();
+  const { user } = useContext(AuthContext);
 
   const [error, setError] = useState('');
   const [processing, setProcessing] = useState(false);
@@ -120,14 +122,25 @@ const Upload = ({ serviceId = null, operation = null }) => {
           setError('❌ This conversion combination is not supported.');
           return;
         }
-        // construct combined string for backend
+        // Set the conversion pair as selectedFormat for the processFile function
         setSelectedFormat(pair);
       } else if (!selectedFormat) {
         setError('❌ Please pick a format first.');
         return;
       }
     }
-    fileInputRef.current?.click();
+    
+    // Trigger file input
+    try {
+      if (fileInputRef.current) {
+        fileInputRef.current.click();
+      } else {
+        console.error('File input ref not available');
+      }
+    } catch (err) {
+      console.error('Error triggering file input:', err);
+      setError('❌ Could not open file picker. Please try again.');
+    }
   };
 
   const handleFileSelect = async (e) => {
@@ -291,20 +304,25 @@ const Upload = ({ serviceId = null, operation = null }) => {
       const formData = new FormData();
       formData.append('file', file);
       if (selectedFormat) {
-        formData.append('conversion', selectedFormat);
+        formData.append('targetFormat', selectedFormat);
       }
 
       // generic conversion endpoint (backend should handle based on conversion pair)
       const endpoint = `${API}/format/convert`;
 
       console.log('📤 Uploading file to:', endpoint);
+      console.log('📋 File details:', { name: file.name, size: file.size, type: file.type });
+      console.log('🎯 Target format:', selectedFormat);
 
       const response = await fetch(endpoint, {
         method: 'POST',
         body: formData
       });
 
+      console.log('📨 Response status:', response.status, response.statusText);
+
       const data = await response.json();
+      console.log('📥 Response data:', data);
 
       if (!response.ok) {
         throw new Error(data.error || data.message || `Conversion failed with status ${response.status}`);
@@ -415,9 +433,55 @@ const Upload = ({ serviceId = null, operation = null }) => {
       <div className="upload-container">
         <div className="upload-content">
           <div className="upload-icon">📤  <h2>Upload Your File</h2></div>
+
+          {!user && (
+            <div style={{
+              marginTop: '1.5rem',
+              padding: '2rem',
+              backgroundColor: '#f0f0f0',
+              borderRadius: '8px',
+              textAlign: 'center',
+              border: '2px dashed #a90006'
+            }}>
+              <h3 style={{ color: '#a90006', marginBottom: '1rem' }}>🔐 Authentication Required</h3>
+              <p style={{ marginBottom: '1.5rem', fontSize: '1rem' }}>
+                You need to sign up or log in to access this service.
+              </p>
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <Link 
+                  to="/user/signup" 
+                  style={{
+                    padding: '0.75rem 1.5rem',
+                    backgroundColor: '#a90006',
+                    color: 'white',
+                    textDecoration: 'none',
+                    borderRadius: '6px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Sign Up
+                </Link>
+                <Link 
+                  to="/user/login" 
+                  style={{
+                    padding: '0.75rem 1.5rem',
+                    backgroundColor: '#333',
+                    color: 'white',
+                    textDecoration: 'none',
+                    borderRadius: '6px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Log In
+                </Link>
+              </div>
+            </div>
+          )}
           
 
-          {!processing && !result && currentService && (
+          {user && !processing && !result && currentService && (
             (currentServiceId !== 'format-conversion' && !selectedFormat) ||
             (currentServiceId === 'format-conversion' && (!selectedFrom || !selectedTo))
           ) && (
@@ -426,7 +490,7 @@ const Upload = ({ serviceId = null, operation = null }) => {
             </div>
           )}
           
-          {!processing && !result && (
+          {user && !processing && !result && (
             <>
               {/* Format Selection */}
               {currentService && currentServiceId !== 'format-conversion' && (
@@ -524,9 +588,14 @@ const Upload = ({ serviceId = null, operation = null }) => {
               <button
                 className="upload-btn"
                 onClick={handleChooseVideo}
-                disabled={currentService && !selectedFormat || (currentServiceId === 'ai-enhancement' && selectedFeatures.length === 0)}
+                disabled={
+                  (currentServiceId === 'format-conversion' && (!selectedFrom || !selectedTo)) ||
+                  (currentServiceId === 'ai-enhancement' && selectedFeatures.length === 0) ||
+                  (currentServiceId !== 'format-conversion' && currentServiceId !== 'ai-enhancement' && currentService && !selectedFormat) ||
+                  processing
+                }
               >
-                {currentService ? 'Upload & Process' : 'Choose your file'}
+                {processing ? 'Processing...' : currentService ? 'Upload & Process' : 'Choose your file'}
               </button>
             </>
           )}

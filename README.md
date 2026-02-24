@@ -171,10 +171,31 @@ File-Enhancer/
 
 ## 🚀 Installation
 
+### Troubleshooting
+
+If uploads keep failing with messages such as:
+
+```
+ffmpeg exited with code 3752568763: frame= 0 fps=0.0 q=0.0 Lsize= 0kB time=N/A bitrate=N/A speed=N/A Conversion failed!
+```
+
+or the server log contains warnings about a "static binary failed to execute", then the bundled FFmpeg executable
+is incompatible with your machine. To resolve the issue:
+
+1. **Install the Visual C++ Redistributable** (2015–2022) on Windows – the static ffmpeg build depends on it.
+2. Alternatively, install FFmpeg yourself and ensure `ffmpeg` is available on the system `PATH`.
+3. Restart the backend after making these changes. The server will automatically fall back to the system
+   binary if the static one fails.
+
+---
+
 ### Prerequisites
 - Node.js (v14 or higher)
 - npm or yarn
 - MongoDB (local or Atlas)
+- **FFmpeg** – required for video compression. The project uses `ffmpeg-static`, which bundles a binary, but on Windows you may need the
+  [Visual C++ Redistributable](https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist) installed or a system-wide `ffmpeg` on
+  your PATH. See the **Troubleshooting** section below if you encounter startup errors.
 
 ### Backend Setup
 

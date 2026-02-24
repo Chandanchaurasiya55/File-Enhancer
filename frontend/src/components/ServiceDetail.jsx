@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Navigation from './Navigation';
 import Upload from './Upload';
-import Footer from './Footer';
 import { servicesData } from '../data/servicesData';
 import '../styles/ServiceDetail.css';
 
@@ -24,7 +22,6 @@ const ServiceDetail = () => {
 
   return (
     <>
-      <Navigation />
       <div className="service-detail-container">
         <div className="service-detail-header">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
@@ -42,7 +39,6 @@ const ServiceDetail = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </>
   );
 };

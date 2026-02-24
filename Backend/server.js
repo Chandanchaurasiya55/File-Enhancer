@@ -3,8 +3,9 @@ dotenv.config();
 const app = require('./src/app');
 const connectDB = require('./src/DB/db');
 const { cleanupOldFiles } = require('./src/Controller/video.controller');
+const { cleanupConvertedFiles } = require('./src/Controller/format.controller');
 
-const PORT = process.env.PORT || 3300;
+const PORT = process.env.PORT || 3000;
 
 // Connect to database and start server
 (async () => {
@@ -30,5 +31,6 @@ const PORT = process.env.PORT || 3300;
 
     // Auto cleanup old files every 30 minutes
     setInterval(cleanupOldFiles, 30 * 60 * 1000);
+    setInterval(cleanupConvertedFiles, 30 * 60 * 1000);
     console.log('🧹 Cleanup scheduler started (every 30 minutes)');
 })();

@@ -1,8 +1,10 @@
-/* Pricing Section */
+/* ===== Pricing Section ===== */
+
 .pricing {
   position: relative;
   z-index: 1;
-  padding: 8rem 2rem;
+  margin-top: 4rem;
+  padding: 4rem 2rem;
   background: var(--white);
 }
 
@@ -14,27 +16,30 @@
   max-width: 1200px;
 }
 
+/* ===== Card ===== */
+
 .pricing-card {
-  background: white;
+  background: var(--white);
   border: 2px solid var(--border);
   border-radius: 12px;
   padding: 2.5rem 2rem;
   position: relative;
   transition: all 0.3s ease;
   text-align: center;
-  animation: slideUp 0.6s ease-out;
 }
 
 .pricing-card:hover {
   transform: translateY(-10px);
-  box-shadow: 0 20px 40px rgba(169, 0, 6, 0.1);
+  box-shadow: 0 20px 40px var(--shadow-light);
 }
 
 .pricing-card.popular {
   border-color: var(--accent);
   transform: scale(1.05);
-  box-shadow: 0 20px 60px rgba(169, 0, 6, 0.2);
+  box-shadow: 0 20px 60px var(--shadow-medium);
 }
+
+/* ===== Popular Badge ===== */
 
 .popular-badge {
   position: absolute;
@@ -42,7 +47,7 @@
   left: 50%;
   transform: translateX(-50%);
   background: var(--accent);
-  color: white;
+  color: var(--white);
   padding: 0.5rem 1.5rem;
   border-radius: 20px;
   font-weight: 700;
@@ -50,6 +55,8 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+
+/* ===== Typography ===== */
 
 .pricing-card h3 {
   font-size: 1.8rem;
@@ -63,6 +70,8 @@
   font-size: 0.95rem;
   margin-bottom: 1.5rem;
 }
+
+/* ===== Price ===== */
 
 .price {
   margin: 1.5rem 0;
@@ -83,6 +92,8 @@
   font-size: 1rem;
 }
 
+/* ===== Button ===== */
+
 .plan-btn {
   width: 100%;
   padding: 1rem 2rem;
@@ -95,24 +106,20 @@
   cursor: pointer;
   transition: all 0.3s ease;
   margin-bottom: 1.5rem;
-  text-transform: capitalize;
 }
 
 .plan-btn:hover {
   background: var(--accent);
-  color: white;
+  color: var(--white);
   transform: translateY(-2px);
 }
 
 .plan-btn.popular-btn {
   background: var(--accent);
-  color: white;
+  color: var(--white);
 }
 
-.plan-btn.popular-btn:hover {
-  background: var(--accent);
-  opacity: 0.9;
-}
+/* ===== Divider ===== */
 
 .divider {
   height: 1px;
@@ -120,10 +127,13 @@
   margin: 1.5rem 0;
 }
 
+/* ===== Features ===== */
+
 .features-list {
   list-style: none;
   text-align: left;
   margin: 1.5rem 0;
+  padding: 0;
 }
 
 .features-list li {
@@ -141,59 +151,7 @@
   font-size: 1.2rem;
 }
 
-/* Pricing FAQ */
-.pricing-faq {
-  max-width: 1000px;
-  margin: 5rem auto 0;
-  padding: 3rem 2rem;
-  background: var(--light-gray);
-  border-radius: 12px;
-}
-
-.pricing-faq h3 {
-  text-align: center;
-  font-size: 2rem;
-  color: var(--text);
-  margin-bottom: 2.5rem;
-}
-
-.faq-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-}
-
-.faq-item {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  border-left: 4px solid var(--accent);
-}
-
-.faq-item h4 {
-  color: var(--text);
-  font-size: 1.1rem;
-  margin-bottom: 0.8rem;
-  font-weight: 700;
-}
-
-.faq-item p {
-  color: var(--dark-gray);
-  line-height: 1.6;
-  font-size: 0.95rem;
-}
-
-/* Animations */
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+/* ===== Animation ===== */
 
 .fade-in {
   animation: fadeInUp 0.6s ease-out forwards;
@@ -210,7 +168,8 @@
   }
 }
 
-/* Responsive */
+/* ===== Responsive ===== */
+
 @media (max-width: 1024px) {
   .pricing {
     padding: 6rem 2rem;
@@ -230,10 +189,6 @@
     padding: 4rem 1.5rem;
   }
 
-  .pricing-grid {
-    gap: 1.5rem;
-  }
-
   .pricing-card {
     padding: 2rem 1.5rem;
   }
@@ -244,14 +199,6 @@
 
   .price .amount {
     font-size: 2rem;
-  }
-
-  .faq-grid {
-    gap: 1.5rem;
-  }
-
-  .pricing-faq h3 {
-    font-size: 1.5rem;
   }
 }
 

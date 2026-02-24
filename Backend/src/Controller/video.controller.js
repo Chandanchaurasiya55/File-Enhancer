@@ -9,10 +9,54 @@ const ffprobeStatic = require("ffprobe-static");
 const path = require("path");
 const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
+const { execFileSync } = require("child_process");
 const upload = require("../config/multer.config");
 
-// Configure ffmpeg with static binaries
-ffmpeg.setFfmpegPath(ffmpegStatic);
+// ---------------------------------------------------------------------------
+//  Helper to pick a working ffmpeg executable.  On Windows the static binary
+//  shipped with "ffmpeg-static" sometimes crashes if the VC++ redistributable
+//  is missing or the CPU architecture doesn't match.  We try the static
+//  build first and fall back to whatever "ffmpeg" is on the PATH.  If neither
+//  works we log an explicit warning so developers know why conversions fail.
+// ---------------------------------------------------------------------------
+function chooseFfmpegPath() {
+  let candidate = ffmpegStatic;
+
+  const test = (exe) => {
+    try {
+      execFileSync(exe, ["-version"], { stdio: "ignore" });
+      return true;
+    } catch (err) {
+      return false;
+    }
+  };
+
+  if (candidate && test(candidate)) {
+    console.log(`[FFMPEG] using static binary: ${candidate}`);
+    return candidate;
+  }
+
+  console.warn(
+    `[FFMPEG] static binary failed to execute, falling back to system ffmpeg`
+  );
+
+  // try system ffmpeg
+  candidate = "ffmpeg";
+  if (test(candidate)) {
+    console.log(`[FFMPEG] using system ffmpeg from PATH`);
+    return candidate;
+  }
+
+  console.error(
+    "[FFMPEG] no working ffmpeg found – please install ffmpeg or VC++ redistributable"
+  );
+  // we still set something so fluent-ffmpeg attempts to spawn it and will
+  // produce a clear error later.
+  return candidate;
+}
+
+// Configure ffmpeg and ffprobe paths
+ffmpeg.setFfmpegPath(chooseFfmpegPath());
 ffmpeg.setFfprobePath(ffprobeStatic.path);
 
 // ─── Directory paths ─────────────────────────────────────────────────────────
@@ -102,8 +146,7 @@ const compressVideo = (req, res) => {
     downloadUrl: `/api/download/${jobId}`,
   });
 
-  // ── FFmpeg Compression (background mein chalti hai) ───────────────────────
-  //
+  // ── FFmpeg Compression (background mein chalti hai)
   //  Settings explain:
   //  libx264       → sabse popular video codec, sab jagah chalti hai
   //  aac           → audio codec
@@ -152,13 +195,17 @@ const compressVideo = (req, res) => {
       safeDelete(inputPath);
     })
 
-    // Koi error aaya (corrupted file, unsupported format, etc.)
-    .on("error", (err) => {
+    // Koi error aaya (corrupted file, unsupported format, crash, etc.)
+    // fluent-ffmpeg passes stderr/stdout as additional arguments; log them
+    .on("error", (err, stdout, stderr) => {
       console.error(`[JOB ERROR] ${jobId} → ${err.message}`);
+      if (stderr) console.error(`[FFMPEG STDERR] ${stderr}`);
+      if (stdout) console.debug(`[FFMPEG STDOUT] ${stdout}`);
+
       jobs[jobId].status = "error";
       jobs[jobId].error  = err.message;
 
-      // Input file cleanup
+      // Input file cleanup (avoid leaving corrupt uploads)
       safeDelete(inputPath);
     })
 

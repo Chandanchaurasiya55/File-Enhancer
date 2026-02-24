@@ -5,19 +5,19 @@
   padding: 8rem 4rem;
   max-width: 1400px;
   margin: 0 auto;
+  gap: 2rem;
   background: var(--white);
 }
-
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 3.5rem;
-  margin-top: 5rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3rem;
 }
 
 .feature-item {
   display: flex;
-  gap: 2.5rem;
+  flex-direction: column;
+  gap: 1.5rem;
   align-items: flex-start;
   opacity: 0;
   transform: translateY(30px);

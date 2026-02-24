@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/Premium.css';
 import premiumImg from '../assets/premium@2x.webp';
+import { useNavigate } from "react-router-dom";
+
 
 const Premium = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,10 +24,11 @@ const Premium = () => {
   }, []);
 
   const handleGetPremium = () => {
-    const element = document.querySelector('#pricing');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+    // const element = document.querySelector('#pricing');
+    // if (element) {
+    //   element.scrollIntoView({ behavior: 'smooth' });
+    // }
+    navigate('/pricing');
   };
 
   const benefits = [
@@ -35,9 +39,6 @@ const Premium = () => {
 
   return (
     <section className="premium-section" id="premium">
-      <div className="premium-bg-decoration premium-decoration-1"></div>
-      <div className="premium-bg-decoration premium-decoration-2"></div>
-      <div className="premium-bg-decoration premium-decoration-3"></div>
       
       <div className="premium-container">
         <div className="premium-content">

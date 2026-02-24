@@ -8,7 +8,7 @@ const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3300/api';
+    const API_URL = import.meta.env.VITE_API_URL ;
 
     // Set token in localStorage
     useEffect(() => {
@@ -226,4 +226,4 @@ const useAuth = () => {
 };
 
 
-export { AuthProvider, useAuth };
+export { AuthProvider, AuthContext, useAuth };

@@ -5,6 +5,7 @@ const cors = require('cors');
 const authRoutes = require('./Routes/auth.route');
 const videoRoutes = require('./Routes/video.route');
 const imgRoutes = require('./Routes/img.routes');
+const formatRoutes = require('./Routes/format.route');
 const errorHandler = require('./Middleware/errorHandler');
 
 const app = express();
@@ -19,6 +20,8 @@ app.use(cors({
 
 // Serve enhanced images statically
 app.use('/enhanced', express.static(path.join(__dirname, 'uploads/enhanced')));
+// Serve converted documents so the frontend can download them
+app.use('/converted', express.static(path.join(__dirname, '..', 'converted')));
 
 // Routes
 app.get('/', (req, res) => {
@@ -28,6 +31,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/video', videoRoutes);
 app.use('/api/image', imgRoutes);
+app.use('/api/format', formatRoutes);
 
 // Global error handling middleware - catches all errors and returns JSON
 app.use(errorHandler);

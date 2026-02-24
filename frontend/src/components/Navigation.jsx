@@ -1,45 +1,50 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import emojiIcon from '../assets/emoji.png';
-import '../styles/Navigation.css';
+import React from "react";
+import { useNavigate,Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import emojiIcon from "../assets/emoji.png";
+import "../styles/Navigation.css";
 
 const Navigation = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
 
-  const handleNavClick = (sectionId) => {
-    const element = document.querySelector(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   const handleLoginClick = () => {
-    navigate('/user/login');
+    navigate("/user/login");
   };
-
 
   const handleDashboardClick = () => {
-    if (user?.role === 'admin' || user?.role === 'superadmin') {
-      navigate('/admin/dashboard');
+    if (user?.role === "admin" || user?.role === "superadmin") {
+      navigate("/admin/dashboard");
     } else {
-      navigate('/user/dashboard');
+      navigate("/user/dashboard");
     }
   };
 
   return (
     <nav className="nav">
-      <div className="logo">BUIMB DIGITAL</div>
+      <div className="logo" onClick={() => navigate("/")}>
+        BUIMB DIGITAL
+      </div>
+
       <div className="nav-menu">
-        <a href="#services" className="nav-link" onClick={(e) => { e.preventDefault(); handleNavClick('#services'); }}>Services</a>
-        <a href="#features" className="nav-link" onClick={(e) => { e.preventDefault(); handleNavClick('#features'); }}>Features</a>
-        <a href="#pricing" className="nav-link" onClick={(e) => { e.preventDefault(); handleNavClick('#pricing'); }}>Pricing</a>
-        <a href="#studio" className="nav-link" onClick={(e) => { e.preventDefault(); handleNavClick('#upload'); }}>Studio</a>
+        <Link to="/" className="nav-link">
+         Home
+        </Link>
+        <Link to="/services" className="nav-link">
+          Services
+        </Link>
+        <Link to="/features" className="nav-link">
+          Features
+        </Link>
+        <Link to="/pricing" className="nav-link">
+          Pricing
+        </Link>
+        <Link to="/Studio" className="nav-link">
+          Studio
+        </Link>
 
         {isAuthenticated ? (
           <div className="user-menu">
-            <span className="nav-user">Welcome, {user?.Fullname || user?.firstname}</span>
             <button
               className="emoji-btn"
               onClick={handleDashboardClick}
@@ -49,9 +54,9 @@ const Navigation = () => {
             </button>
           </div>
         ) : (
-          <>
-            <button className="btn-premium" onClick={handleLoginClick}>Get Started</button>
-          </>
+          <button className="btn-premium" onClick={handleLoginClick}>
+            Get Started
+          </button>
         )}
       </div>
     </nav>

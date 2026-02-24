@@ -1,12 +1,11 @@
 import React from 'react';
+import { useNavigate } from "react-router-dom";
 import '../styles/Home.css';
 
 const Home = () => {
-  const handleNavClick = (sectionId) => {
-    const element = document.querySelector(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+  const navigate = useNavigate();
+  const handleNavClick = (path) => {
+    navigate(path);
   };
 
   return (
@@ -19,8 +18,8 @@ const Home = () => {
           and every frame tells a story worth preserving.
         </p>
         <div className="hero-cta">
-          <button className="btn-primary" onClick={() => handleNavClick('#services')}>Start Creating</button>
-          <button className="btn-secondary" onClick={() => handleNavClick('#features')}>Explore Studio</button>
+          <button className="btn-primary" onClick={() => handleNavClick('/services')}>Start Creating</button>
+          <button className="btn-secondary" onClick={() => handleNavClick('/studio')}>Explore Studio</button>
         </div>
       </div>
     </section>

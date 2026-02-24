@@ -3,7 +3,7 @@
   position: relative;
   z-index: 1;
   padding: 8rem 2rem;
-  background: linear-gradient(135deg, #FFF0E6 0%, #FFF5ED 50%, #FFFBF7 100%);
+  background: var(--white);
   overflow: hidden;
 }
 

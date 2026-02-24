@@ -7,15 +7,23 @@
 const errorHandler = (err, req, res, next) => {
   console.error(`[ERROR] ${err.message}`);
 
-  // Multer ka file size error
+  // Multer file size error
   if (err.code === "LIMIT_FILE_SIZE") {
     return res.status(413).json({
       success: false,
-      error: "File bahut badi hai! Maximum 500 MB allowed hai.",
+      error: "File bahut badi hai! Maximum size limit exceed ho gaya.",
     });
   }
 
-  // Multer ka wrong file type error
+  // Multer unsupported file type error
+  if (err.message && err.message.includes("Unsupported file type")) {
+    return res.status(415).json({
+      success: false,
+      error: err.message,
+    });
+  }
+
+  // Video-specific error
   if (err.message && err.message.includes("Sirf MP4")) {
     return res.status(415).json({
       success: false,

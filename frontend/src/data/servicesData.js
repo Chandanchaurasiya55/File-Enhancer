@@ -54,10 +54,9 @@ export const servicesData = [
       'PDF ↔ Word',
       'PDF ↔ Excel',
       'PDF ↔ PowerPoint',
-      'Office Files ↔ Image (JPG, PNG)',
       'Office Files ↔ HTML',
       'Office Files ↔ XML',
-      'Office Files ↔ OpenDocument (ODT, ODS, ODP)'
+      'Office Files ↔ OpenDocument'
     ],
     // leave formats empty since selection is handled separately
     formats: [],
