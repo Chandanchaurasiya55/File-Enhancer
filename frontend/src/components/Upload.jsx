@@ -77,6 +77,12 @@ const Upload = ({ serviceId = null, operation = null }) => {
     ? [...new Set(currentService.conversions.flatMap(c => c.split(' ↔ ').map(p => p.trim())))]
     : [];
 
+  // get user-friendly display name for a format code
+  const getFormatDisplayName = (code) => {
+    if (!currentService?.formatDisplayNames) return code.toUpperCase();
+    return currentService.formatDisplayNames[code] || code.toUpperCase();
+  };
+
   // reset combined format string when user modifies selections
   useEffect(() => {
     if (currentServiceId === 'format-conversion') {
@@ -301,18 +307,26 @@ const Upload = ({ serviceId = null, operation = null }) => {
       setProgress(0);
       setResult(null);
 
-      const formData = new FormData();
-      formData.append('file', file);
-      if (selectedFormat) {
-        formData.append('targetFormat', selectedFormat);
+      // Extract target format from selectedFormat (e.g., "DOCX ↔ PDF" -> "pdf")
+      let targetFormat = selectedTo;
+      if (!targetFormat && selectedFormat) {
+        // Fallback: parse the format string if selectedFormat is "FROM ↔ TO"
+        const parts = selectedFormat.split('↔').map(p => p.trim());
+        targetFormat = parts[1] || parts[0];
       }
 
-      // generic conversion endpoint (backend should handle based on conversion pair)
-      const endpoint = `${API}/format/convert`;
+      targetFormat = targetFormat.toLowerCase();
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('targetFormat', targetFormat);
+
+      // Backend endpoint for file conversion
+      const endpoint = `${API}/convert`;
 
       console.log('📤 Uploading file to:', endpoint);
       console.log('📋 File details:', { name: file.name, size: file.size, type: file.type });
-      console.log('🎯 Target format:', selectedFormat);
+      console.log('🎯 Target format:', targetFormat);
 
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -321,26 +335,47 @@ const Upload = ({ serviceId = null, operation = null }) => {
 
       console.log('📨 Response status:', response.status, response.statusText);
 
-      const data = await response.json();
-      console.log('📥 Response data:', data);
+      // Check content type to determine if response is JSON or binary file
+      const contentType = response.headers.get('content-type');
+      const isJson = contentType && contentType.includes('application/json');
 
-      if (!response.ok) {
-        throw new Error(data.error || data.message || `Conversion failed with status ${response.status}`);
-      }
+      if (isJson) {
+        // Failed response - JSON error message
+        const data = await response.json();
+        console.log('📥 Response data:', data);
 
-      if (data.success && data.downloadUrl) {
-        console.log('✅ Conversion complete!', data);
+        if (!response.ok) {
+          throw new Error(data.error || data.message || `Conversion failed with status ${response.status}`);
+        }
+      } else {
+        // Success response - binary file being downloaded
+        if (!response.ok) {
+          throw new Error(`Conversion failed with status ${response.status}`);
+        }
+
+        // Extract filename from Content-Disposition header or generate one
+        const contentDisposition = response.headers.get('content-disposition');
+        let filename = `converted.${targetFormat}`;
+        
+        if (contentDisposition) {
+          const filenameMatch = contentDisposition.match(/filename[^;=\n]*=(?:(['"]).*?\1|[^;\n]*)/);
+          if (filenameMatch && filenameMatch[0]) {
+            filename = filenameMatch[0].replace(/filename[^;=\n]*=/g, '').replace(/['"]/g, '');
+          }
+        }
+
+        // Get the blob and trigger download
+        const blob = await response.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        downloadFile(downloadUrl, filename);
+
+        console.log('✅ Conversion complete! File downloaded.');
         setProgress(100);
         setResult({
           success: true,
-          message: 'Conversion complete! Ready to download.',
-          file: {
-            downloadUrl: data.downloadUrl,
-            filename: data.filename
-          }
+          message: 'Conversion complete! File downloaded successfully.',
+          file: { filename }
         });
-      } else {
-        throw new Error(data.error || 'Unknown error occurred');
       }
     } catch (err) {
       console.error('❌ Conversion error:', err);
@@ -524,7 +559,7 @@ const Upload = ({ serviceId = null, operation = null }) => {
                       onChange={e => setSelectedFrom(e.target.value)}
                     >
                       <option value="" disabled>-- choose source format --</option>
-                      {formatChoices.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                      {formatChoices.map(opt => <option key={opt} value={opt}>{getFormatDisplayName(opt)}</option>)}
                     </select>
                   </div>
 
@@ -540,7 +575,7 @@ const Upload = ({ serviceId = null, operation = null }) => {
                       onChange={e => setSelectedTo(e.target.value)}
                     >
                       <option value="" disabled>-- choose target format --</option>
-                      {formatChoices.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                      {formatChoices.map(opt => <option key={opt} value={opt}>{getFormatDisplayName(opt)}</option>)}
                     </select>
                   </div>
                 </div>

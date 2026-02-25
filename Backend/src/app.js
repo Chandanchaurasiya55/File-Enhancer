@@ -1,11 +1,11 @@
 const express = require('express');
 const path = require('path');
-const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const authRoutes = require('./Routes/auth.route');
 const videoRoutes = require('./Routes/video.route');
 const imgRoutes = require('./Routes/img.routes');
-const formatRoutes = require('./Routes/format.route');
+const formateRoutes = require('../src/Routes/formate.route')
 const errorHandler = require('./Middleware/errorHandler');
 
 const app = express();
@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/video', videoRoutes);
 app.use('/api/image', imgRoutes);
-app.use('/api/format', formatRoutes);
+app.use("/api", formateRoutes);
 
 // Global error handling middleware - catches all errors and returns JSON
 app.use(errorHandler);

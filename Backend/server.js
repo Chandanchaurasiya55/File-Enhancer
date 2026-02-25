@@ -3,7 +3,8 @@ dotenv.config();
 const app = require('./src/app');
 const connectDB = require('./src/DB/db');
 const { cleanupOldFiles } = require('./src/Controller/video.controller');
-const { cleanupConvertedFiles } = require('./src/Controller/format.controller');
+const { cleanupConvertedFiles } = require('./src/Controller/formate.controller');
+
 
 const PORT = process.env.PORT || 3000;
 

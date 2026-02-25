@@ -49,22 +49,53 @@ export const servicesData = [
     description: 'Seamlessly convert between a wide variety of document and office file formats.',
     operation: 'convert',
     fullDescription: 'Select the conversion type you need, then upload your file to get it converted instantly.',
-    // list of conversion pairs offered by this service
+    // Conversion pairs with actual format codes that backend understands
     conversions: [
-      'PDF ↔ Word',
-      'PDF ↔ Excel',
-      'PDF ↔ PowerPoint',
-      'Office Files ↔ HTML',
-      'Office Files ↔ XML',
-      'Office Files ↔ OpenDocument'
+      'pdf ↔ docx',
+      'pdf ↔ html',
+      'pdf ↔ txt',
+      'pdf ↔ png',
+      'pdf ↔ jpg',
+      'docx ↔ pdf',
+      'docx ↔ html',
+      'docx ↔ txt',
+      'docx ↔ xml',
+      'pptx ↔ pdf',
+      'pptx ↔ html',
+      'pptx ↔ txt',
+      'pptx ↔ png',
+      'xlsx ↔ pdf',
+      'xlsx ↔ html',
+      'xlsx ↔ csv',
+      'xlsx ↔ txt',
+      'html ↔ pdf',
+      'html ↔ docx',
+      'html ↔ txt',
+      'html ↔ xml',
+      'xml ↔ html',
+      'xml ↔ txt',
+      'xml ↔ docx'
     ],
-    // leave formats empty since selection is handled separately
+    // Map format codes to user-friendly display names
+    formatDisplayNames: {
+      'pdf': 'PDF Document',
+      'docx': 'Word (.docx)',
+      'pptx': 'PowerPoint (.pptx)',
+      'xlsx': 'Excel (.xlsx)',
+      'html': 'HTML Web Page',
+      'txt': 'Plain Text',
+      'xml': 'XML Data',
+      'csv': 'CSV Spreadsheet',
+      'png': 'PNG Image',
+      'jpg': 'JPG Image'
+    },
+    // Leave formats empty since selection is handled separately
     formats: [],
     features: [
-      'Bidirectional conversions',
-      'Support for all popular document formats',
-      'Fast, cloud‑based processing',
-      'No quality loss'
+      'Convert PDF, Word, Excel, PowerPoint',
+      'HTML, XML, and text conversions',
+      'Image export (PNG, JPG)',
+      'Fast and reliable conversions'
     ],
     benefits: [
       'Work with any platform or application',
