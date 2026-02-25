@@ -309,29 +309,40 @@ Response:
 }
 ```
 
-#### Get Current User
+#### Get Current User (Auto-Authentication on Page Load)
 ```
 GET /auth/me
-Authorization: Bearer <token>
+Credentials: Automatic (cookie-based)
 
 Response:
 {
   "success": true,
   "message": "User data retrieved",
-  "user": { ... }
+  "user": {
+    "id": "mongodb_id",
+    "Email": "john@example.com",
+    "Fullname": "John Doe",
+    "Phone": "9876543210",
+    "role": "user"
+  }
 }
+
+Note: This endpoint is called automatically on app load to maintain authentication
+       across page refreshes. Uses secure HTTP-only cookie from login.
 ```
 
-#### User Logout
+#### User Logout (Clears Cookie)
 ```
 POST /auth/logout
-Authorization: Bearer <token>
+Credentials: Automatic (cookie-based)
 
 Response:
 {
   "success": true,
   "message": "Logged out successfully"
 }
+
+Note: Clears the HTTP-only authentication cookie
 ```
 
 ### Admin Endpoints
@@ -399,6 +410,135 @@ Response:
 
 ---
 
+### Video Processing Endpoints (Protected - Requires Authentication)
+
+#### Compress Video
+```
+POST /api/video/compress
+Content-Type: multipart/form-data
+Authentication: Required (cookie-based)
+
+Form Data:
+  video: <file>     // Video file
+  format: string    // Optional output format
+
+Response:
+{
+  "success": true,
+  "message": "Compression job accepted",
+  "jobId": "unique_job_id"
+}
+```
+
+#### Check Compression Job Status
+```
+GET /api/video/status/:jobId
+Authentication: Required (cookie-based)
+
+Response:
+{
+  "status": "done"|"processing"|"error",
+  "progress": 0-100,
+  "originalSize": bytes,
+  "compressedSize": bytes,
+  "jobId": "unique_job_id",
+  "originalName": "filename.mp4"
+}
+```
+
+#### Download Compressed Video
+```
+GET /api/video/download/:jobId
+Authentication: Required (cookie-based)
+
+Response: Binary video file
+```
+
+---
+
+### Document Format Conversion Endpoints (Protected - Requires Authentication)
+
+#### Convert File Format
+```
+POST /api/convert
+Content-Type: multipart/form-data
+Authentication: Required (cookie-based)
+
+Form Data:
+  file: <file>           // Document file (PDF, DOCX, etc)
+  targetFormat: string   // Target format (pdf, docx, html, txt, xml, png, jpg, etc)
+
+Supported Conversions:
+  PDF → PNG, JPG
+  DOCX ↔ PDF, HTML, TXT, XML
+  DOC ↔ PDF, DOCX, HTML, TXT
+  PPTX ↔ PDF, HTML, TXT, PNG
+  XLSX ↔ PDF, HTML, CSV, TXT
+  HTML ↔ PDF, DOCX, TXT, XML
+  XML ↔ HTML, TXT, DOCX
+
+Response: Binary file (directly downloads)
+```
+
+#### Get Supported Formats
+```
+GET /api/formats
+
+Response:
+{
+  "success": true,
+  "conversions": [
+    "pdf ↔ png",
+    "docx ↔ pdf",
+    ...
+  ]
+}
+```
+
+**Format Converter UI Features:**
+- Smart source/target selection
+- Target formats dynamically filter based on selected source format
+- Auto-selection of target if only one option exists
+- Download button required to save converted file (no auto-download)
+
+---
+
+### Image Enhancement Endpoints (Protected - Requires Authentication)
+
+#### Enhance Image
+```
+POST /api/image/enhance
+Content-Type: multipart/form-data
+Authentication: Required (cookie-based)
+
+Form Data:
+  file: <file>              // Image file (JPG, PNG, etc)
+  features: string[]        // Optional: upscale,sharpen,denoise,restore,bgremove,face,color,objremove
+
+Example Features:
+  - upscale      // Image upscaling
+  - sharpen      // Blur removal and sharpening
+  - denoise      // Noise removal
+  - restore      // Old photo restoration
+  - bgremove     // Background removal
+  - face         // Face enhancement
+  - color        // Color correction
+  - objremove    // Object removal
+
+Response:
+{
+  "success": true,
+  "message": "Image enhanced successfully",
+  "data": {
+    "downloadUrl": "/enhanced/filename.png",
+    "original": { "size": "1.2 MB", "format": "jpeg" },
+    "enhanced": { "size": "2.4 MB", "format": "png" }
+  }
+}
+```
+
+---
+
 ## 💾 Database Schema
 
 ### User Schema
@@ -435,10 +575,22 @@ Response:
 ## 🔐 Authentication
 
 ### JWT Token
-- **Expiration:** 12 hours
+- **Expiration:** 7 days (updated from 12 hours)
 - **Signing:** JWT_SECRET from environment
-- **Storage:** localStorage (frontend), cookies (optional)
-- **Transmission:** Authorization header
+- **Storage:** Secure HTTP-only cookies (frontend no longer uses localStorage)
+- **Transmission:** Automatic via cookies (credentials: 'include' on all requests)
+
+### Cookie Configuration
+- **httpOnly:** true (prevents JavaScript access, reduces XSS risk)
+- **sameSite:** lax (CSRF protection)
+- **secure:** true in production (HTTPS only)
+- **maxAge:** 604,800,000ms (7 days)
+
+### Auto-Authentication on Page Refresh
+- Frontend checks authentication status on app load
+- User stays logged in for 7 days even after page refresh
+- Cookie sent automatically with all API requests
+- No more 403 errors on page reload
 
 ### Password Security
 - **Hashing Algorithm:** bcryptjs (salt rounds: 10)
@@ -448,7 +600,8 @@ Response:
 ### Authorization
 - **User Routes:** Require valid user token
 - **Admin Routes:** Require valid admin token with admin/superadmin role
-- **Protected Routes:** Dashboard and profile routes protected
+- **Protected Routes:** All file processing endpoints (video, image, document conversion) require authentication
+- **Dashboard Routes:** User and admin dashboards protected with role-based access
 
 ---
 
@@ -463,10 +616,8 @@ MONGODB_URI=mongodb://localhost:27017/fileenhancer
 PORT=3000
 NODE_ENV=development
 
-# JWT
+# JWT (7-day expiration)
 JWT_SECRET=your_super_secret_jwt_key_change_in_production
-jwtExpiration=1d
-jwtRefreshExpiration=7d
 ```
 
 ### Frontend (.env)
@@ -474,6 +625,8 @@ jwtRefreshExpiration=7d
 # API Endpoint
 VITE_API_URL=http://localhost:3000/api
 ```
+
+**Note:** Token automatically expires after 7 days. Users need to login again after expiration.
 
 ---
 
@@ -644,9 +797,38 @@ For issues or questions:
 
 ---
 
-**Last Updated:** February 20, 2026  
-**Version:** 1.0.0  
+**Last Updated:** February 25, 2026  
+**Version:** 1.1.0  
 **Status:** Production Ready ✅
+
+---
+
+## 📝 Recent Updates (Version 1.1.0)
+
+### Authentication System (🔒 Major Security Improvement)
+- ✅ Changed token expiration from 12 hours to 7 days
+- ✅ Implemented secure HTTP-only cookies (prevents XSS attacks)
+- ✅ Added sameSite and secure cookie flags for CSRF protection
+- ✅ Frontend now uses cookies instead of localStorage
+- ✅ Auto-authentication on page refresh (no more 403 errors)
+- ✅ Protected all file processing routes with authentication middleware
+- ✅ All API requests automatically include credentials
+
+### Format Converter Improvements (📋 UI/UX Enhancement)
+- ✅ Fixed auto-download issue - users must click download button
+- ✅ Smart target format filtering based on source format
+- ✅ Auto-selection of target format if only one option exists
+- ✅ Improved user experience with dynamic dropdown updates
+
+### Protected Endpoints
+All these endpoints now require authentication:
+- POST /api/video/compress
+- GET /api/video/status/:jobId
+- GET /api/video/download/:jobId
+- POST /api/image/enhance
+- POST /api/image/upscale, /sharpen, /denoise, /restore, /bgremove, /face, /color, /objremove
+- GET /api/image/download/:filename
+- POST /api/convert
 
 ---
 

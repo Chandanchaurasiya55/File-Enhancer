@@ -4,27 +4,46 @@ const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [token, setToken] = useState(localStorage.getItem('token'));
-    const [loading, setLoading] = useState(false);
+    const [token, setToken] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     const API_URL = import.meta.env.VITE_API_URL ;
 
-    // Set token in localStorage
+    // Check authentication on app load using cookie
     useEffect(() => {
-        if (token) {
-            localStorage.setItem('token', token);
-        } else {
-            localStorage.removeItem('token');
-        }
-    }, [token]);
+        const checkAuth = async () => {
+            try {
+                const response = await fetch(`${API_URL}/auth/me`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include' // Send cookies with request
+                });
 
-    // Fetch current user
-    useEffect(() => {
-        if (token) {
-            fetchCurrentUser();
-        }
-    }, [token]);
+                const data = await response.json();
+
+                if (data.success) {
+                    setUser(data.user);
+                    setToken('authenticated'); // Token exists in cookie
+                    setError(null);
+                } else {
+                    setUser(null);
+                    setToken(null);
+                    setError(null);
+                }
+            } catch (err) {
+                console.error('Auth check error:', err);
+                setUser(null);
+                setToken(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        checkAuth();
+    }, []);
 
     const fetchCurrentUser = async () => {
         try {
@@ -32,15 +51,16 @@ const AuthProvider = ({ children }) => {
             const response = await fetch(`${API_URL}/auth/me`, {
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include' // Send cookies with request
             });
 
             const data = await response.json();
 
             if (data.success) {
                 setUser(data.user);
+                setToken('authenticated'); // Token exists in cookie
                 setError(null);
             } else {
                 setUser(null);
@@ -66,13 +86,14 @@ const AuthProvider = ({ children }) => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
+                credentials: 'include', // Send cookies with request
                 body: JSON.stringify(userData)
             });
 
             const data = await response.json();
 
             if (data.success) {
-                setToken(data.token);
+                setToken('authenticated'); // Token is now in cookie
                 setUser(data.user);
                 return { success: true, message: data.message };
             } else {
@@ -97,13 +118,14 @@ const AuthProvider = ({ children }) => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
+                credentials: 'include', // Send cookies with request
                 body: JSON.stringify(credentials)
             });
 
             const data = await response.json();
 
             if (data.success) {
-                setToken(data.token);
+                setToken('authenticated'); // Token is now in cookie
                 setUser(data.user);
                 return { success: true, message: data.message };
             } else {
@@ -128,13 +150,14 @@ const AuthProvider = ({ children }) => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
+                credentials: 'include', // Send cookies with request
                 body: JSON.stringify(userData)
             });
 
             const data = await response.json();
 
             if (data.success) {
-                setToken(data.token);
+                setToken('authenticated'); // Token is now in cookie
                 setUser(data.user);
                 return { success: true, message: data.message };
             } else {
@@ -159,13 +182,14 @@ const AuthProvider = ({ children }) => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
+                credentials: 'include', // Send cookies with request
                 body: JSON.stringify(credentials)
             });
 
             const data = await response.json();
 
             if (data.success) {
-                setToken(data.token);
+                setToken('authenticated'); // Token is now in cookie
                 setUser(data.user);
                 return { success: true, message: data.message };
             } else {
@@ -186,8 +210,9 @@ const AuthProvider = ({ children }) => {
             await fetch(`${API_URL}/auth/logout`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include' // Send cookies with request to clear them
             });
 
             setToken(null);

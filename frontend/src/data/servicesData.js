@@ -51,9 +51,6 @@ export const servicesData = [
     fullDescription: 'Select the conversion type you need, then upload your file to get it converted instantly.',
     // Conversion pairs with actual format codes that backend understands
     conversions: [
-      'pdf ↔ docx',
-      'pdf ↔ html',
-      'pdf ↔ txt',
       'pdf ↔ png',
       'pdf ↔ jpg',
       'docx ↔ pdf',

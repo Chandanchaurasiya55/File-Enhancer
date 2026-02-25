@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Clash+Display:wght@600;700&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap');
+
 * {
   margin: 0;
   padding: 0;
@@ -5,11 +7,11 @@
 }
 
 :root {
-  --white: #FFFFFF;
+  --white: #f1efef;
   --light-gray: #F8F9FA;
   --gray: #E9ECEF;
   --dark-gray: #495057;
-  --text: #1A1A1A;
+  --text: #090808;
   --accent: #a90006;
   --accent-light: #d51919;
   --border: #D0D5DD;
@@ -27,6 +29,7 @@ body {
   color: var(--text);
   overflow-x: hidden;
   cursor: default;
+  padding-top: 80px;
 }
 
 body, html {
@@ -231,6 +234,7 @@ body, html {
 @media (max-width: 768px) {
   body {
     font-size: 14px;
+    padding-top: 120px;
   }
 
   .section-title h2 {
@@ -250,6 +254,12 @@ body, html {
   .btn-premium {
     padding: 0.8rem 1.5rem;
     font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding-top: 100px;
   }
 }
 

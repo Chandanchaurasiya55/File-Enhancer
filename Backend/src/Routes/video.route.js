@@ -6,6 +6,7 @@
 
 const express = require("express");
 const router = express.Router();
+const authenticateUser = require("../Middleware/auth.middleware");
 
 // Controller import
 const {
@@ -21,19 +22,19 @@ const {
 //  upload.single("video") → multer pehle file save karega
 //  phir compressVideo controller chalega
 // ─────────────────────────────────────────────────────────────
-router.post("/compress", upload.single("video"), compressVideo);
+router.post("/compress", authenticateUser, upload.single("video"), compressVideo);
 
 // ─────────────────────────────────────────────────────────────
 //  GET /api/video/status/:jobId
 //  Step 2: Frontend baar baar yeh call karta hai
 //  jab tak status "done" ya "error" na ho
 // ─────────────────────────────────────────────────────────────
-router.get("/status/:jobId", getJobStatus);
+router.get("/status/:jobId", authenticateUser, getJobStatus);
 
 // ─────────────────────────────────────────────────────────────
 //  GET /api/video/download/:jobId
 //  Step 3: "done" hone ke baad user download karta hai
 // ─────────────────────────────────────────────────────────────
-router.get("/download/:jobId", downloadVideo);
+router.get("/download/:jobId", authenticateUser, downloadVideo);
 
 module.exports = router;

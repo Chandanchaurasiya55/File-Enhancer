@@ -2,7 +2,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-// ─── Allowed Input Formats ────────────────────────────────────────────────────
+// ─── Allowed Input Formats (Extensions must be lowercase for filtering)
 const ALLOWED_INPUT_FORMATS = [
   ".pdf", ".docx", ".doc",
   ".pptx", ".ppt",
@@ -10,13 +10,14 @@ const ALLOWED_INPUT_FORMATS = [
   ".xlsx", ".xls",
 ];
 
-// ─── Ensure Uploads Folder Exists ────────────────────────────────────────────
-const uploadDir = path.join(__dirname, "uploads");
+// ─── Ensure Uploads Folder Exists 
+// Use existing root uploads folder
+const uploadDir = path.join(__dirname, "../uploads/formats");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// ─── Multer Disk Storage (Windows Safe Filenames) ────────────────────────────
+// ─── Multer Disk Storage (Windows Safe Filenames)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, uploadDir);
@@ -31,7 +32,7 @@ const storage = multer.diskStorage({
   },
 });
 
-// ─── File Type Filter ─────────────────────────────────────────────────────────
+// ─── File Type Filter 
 const fileFilter = (req, file, cb) => {
   const ext = path.extname(file.originalname).toLowerCase();
   if (ALLOWED_INPUT_FORMATS.includes(ext)) {

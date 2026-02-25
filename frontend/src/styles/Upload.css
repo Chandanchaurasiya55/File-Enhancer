@@ -75,7 +75,7 @@
 .upload-content p {
   font-size: 0.95rem;
   color: #666;
-  margin: 0.5rem 0 0 0;
+  margin: 0.5rem 0 1rem 0;
   font-weight: 500;
 }
 
@@ -500,18 +500,6 @@
   transform: translateY(-3px);
   box-shadow: 0 12px 32px rgba(169, 0, 6, 0.4);
 }
-
-
-/* .format-select{
-  width: 100%;
-  margin-top: 0.5rem;
-  padding: 0.6rem 1rem 0.6rem 0.8rem;
-  border: 2px solid rgba(169, 0, 6, 0.15);
-  border-radius: 10px;
-  background: #e7e5e5;
-  font-size: 1rem;
-} */
-
 
 
 /* Each Field */

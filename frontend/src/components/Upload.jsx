@@ -83,12 +83,41 @@ const Upload = ({ serviceId = null, operation = null }) => {
     return currentService.formatDisplayNames[code] || code.toUpperCase();
   };
 
-  // reset combined format string when user modifies selections
+  // get valid target formats based on selected source format
+  const getValidTargetFormats = (sourceFormat) => {
+    if (!sourceFormat || !currentService?.conversions) return [];
+    
+    const validTargets = new Set();
+    currentService.conversions.forEach(conversion => {
+      const [from, to] = conversion.split(' ↔ ').map(p => p.trim());
+      if (from === sourceFormat) {
+        validTargets.add(to);
+      } else if (to === sourceFormat) {
+        validTargets.add(from);
+      }
+    });
+    
+    return Array.from(validTargets);
+  };
+
+  // reset combined format string and target format when user modifies source selection
   useEffect(() => {
     if (currentServiceId === 'format-conversion') {
       setSelectedFormat(null);
+      // Reset target when source changes
+      if (selectedFrom) {
+        const validTargets = getValidTargetFormats(selectedFrom);
+        // Auto-select target if only one option exists
+        if (validTargets.length === 1) {
+          setSelectedTo(validTargets[0]);
+        } else {
+          setSelectedTo('');
+        }
+      } else {
+        setSelectedTo('');
+      }
     }
-  }, [selectedFrom, selectedTo, currentServiceId]);
+  }, [selectedFrom, currentServiceId]);
 
   // Get formats - either from service or default list
   const displayFormats = currentService?.formats || ['MP4', 'MOV', 'AVI', 'MKV', 'WEBM', 'PRORES', 'HEVC'];
@@ -192,7 +221,9 @@ const Upload = ({ serviceId = null, operation = null }) => {
         attempts++;
 
         try {
-          const response = await fetch(statusUrl);
+          const response = await fetch(statusUrl, {
+            credentials: 'include'
+          });
           const data = await response.json();
 
           if (!response.ok) {
@@ -242,7 +273,8 @@ const Upload = ({ serviceId = null, operation = null }) => {
 
       const response = await fetch(endpoint, {
         method: 'POST',
-        body: formData
+        body: formData,
+        credentials: 'include'
       });
 
       const contentType = response.headers.get('content-type');
@@ -330,10 +362,9 @@ const Upload = ({ serviceId = null, operation = null }) => {
 
       const response = await fetch(endpoint, {
         method: 'POST',
-        body: formData
+        body: formData,
+        credentials: 'include'
       });
-
-      console.log('📨 Response status:', response.status, response.statusText);
 
       // Check content type to determine if response is JSON or binary file
       const contentType = response.headers.get('content-type');
@@ -364,17 +395,19 @@ const Upload = ({ serviceId = null, operation = null }) => {
           }
         }
 
-        // Get the blob and trigger download
+        // Get the blob but don't auto-download - store for user to download manually
         const blob = await response.blob();
         const downloadUrl = window.URL.createObjectURL(blob);
-        downloadFile(downloadUrl, filename);
 
-        console.log('✅ Conversion complete! File downloaded.');
+        console.log('✅ Conversion complete! Ready for download.');
         setProgress(100);
         setResult({
           success: true,
-          message: 'Conversion complete! File downloaded successfully.',
-          file: { filename }
+          message: 'Conversion complete! Ready to download.',
+          file: { 
+            filename,
+            downloadUrl 
+          }
         });
       }
     } catch (err) {
@@ -407,7 +440,8 @@ const Upload = ({ serviceId = null, operation = null }) => {
 
       const response = await fetch(endpoint, {
         method: 'POST',
-        body: formData
+        body: formData,
+        credentials: 'include'
       });
 
       const data = await response.json();
@@ -573,9 +607,10 @@ const Upload = ({ serviceId = null, operation = null }) => {
                       className='format-select'
                       value={selectedTo}
                       onChange={e => setSelectedTo(e.target.value)}
+                      disabled={!selectedFrom}
                     >
                       <option value="" disabled>-- choose target format --</option>
-                      {formatChoices.map(opt => <option key={opt} value={opt}>{getFormatDisplayName(opt)}</option>)}
+                      {selectedFrom && getValidTargetFormats(selectedFrom).map(opt => <option key={opt} value={opt}>{getFormatDisplayName(opt)}</option>)}
                     </select>
                   </div>
                 </div>

@@ -3,8 +3,10 @@ import {
   Routes,
   Route,
   Navigate,
+  useLocation,
 } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { useEffect } from "react";
 
 // Pages
 import Navigation from "./components/Navigation";
@@ -47,10 +49,25 @@ function LandingPage() {
   );
 }
 
+// Scroll to top on route change
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, [pathname]);
+
+  return null;
+}
+
 function App() {
   return (
     <Router>
       <AuthProvider>
+        <ScrollToTop />
         <Navigation />
         <Routes>
           {/* Landing Page */}

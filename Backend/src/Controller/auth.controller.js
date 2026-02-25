@@ -89,9 +89,14 @@ async function registerUser(req, res){
         role: 'user'
     });
 
-    const token = jwt.sign({ id: newuser._id }, process.env.JWT_SECRET, { expiresIn: '12h' }); //token generated and valid for 12 hours
+    const token = jwt.sign({ id: newuser._id }, process.env.JWT_SECRET, { expiresIn: '7d' }); //token generated and valid for 7 days
 
-    res.cookie('token', token);
+    res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
+    });
        
         return res.status(201).json({
         success: true,
@@ -190,13 +195,18 @@ const loginUser = async (req, res) => {
         // Generate token
         let token;
         try {
-            token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '12h' });
+            token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
         } catch (err) {
             console.error('loginUser jwt.sign error', err);
             return res.status(500).json({ success: false, message: 'Server error creating session token' });
         }
 
-        res.cookie('token', token);
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
+        });
 
         return res.status(200).json({
             success: true,

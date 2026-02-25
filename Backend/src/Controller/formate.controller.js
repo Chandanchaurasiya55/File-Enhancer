@@ -3,8 +3,8 @@ const fs = require("fs");
 const { execSync } = require("child_process");
 const os = require("os");
 
-// ─── Output Directory 
-const outputDir = path.join(__dirname, "converted");
+// ─── Output Directory for Converted Files (Root outputs folder with formats subfolder)
+const outputDir = path.join(__dirname, "../outputs/formats");
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true });
 }
@@ -47,7 +47,7 @@ const getPandocPath = () => {
 // ─── Conversion Matrix (Defines which formats can be converted to which, and by which tool)
 // Defines which tool handles which conversion
 const conversionMatrix = {
-  pdf:  { targets: ["docx", "html", "txt", "png", "jpg"],  tool: "libreoffice" },
+  pdf:  { targets: ["png", "jpg"],                          tool: "libreoffice" },  // PDF → image only (extract pages as images)
   docx: { targets: ["pdf", "html", "txt", "xml"],           tool: "both" },
   doc:  { targets: ["pdf", "docx", "html", "txt"],          tool: "libreoffice" },
   pptx: { targets: ["pdf", "html", "txt", "png"],           tool: "libreoffice" },

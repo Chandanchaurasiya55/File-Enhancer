@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const authenticateUser = require("../Middleware/auth.middleware");
 
 const { convertFile, getSupportedFormats } = require("../Controller/formate.controller");
 const { upload, validateTargetFormat, handleUploadError } = require("../Middleware/formate.middleware");
@@ -36,6 +37,7 @@ router.get("/formats", getSupportedFormats);
 // ─────────────────────────────────────────────────────────────────────────────
 router.post(
   "/convert",
+  authenticateUser,
   (req, res, next) => {
     upload.single("file")(req, res, (err) => {
       handleUploadError(err, req, res, next);

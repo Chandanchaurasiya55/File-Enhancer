@@ -20,8 +20,8 @@ app.use(cors({
 
 // Serve enhanced images statically
 app.use('/enhanced', express.static(path.join(__dirname, 'uploads/enhanced')));
-// Serve converted documents so the frontend can download them
-app.use('/converted', express.static(path.join(__dirname, '..', 'converted')));
+// Serve converted documents from root outputs folder
+app.use('/converted', express.static(path.join(__dirname, '..', 'outputs')));
 
 // Routes
 app.get('/', (req, res) => {

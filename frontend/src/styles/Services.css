@@ -2,7 +2,7 @@
 .services {
   position: relative;
   z-index: 1;
-  padding: 8rem 4rem;
+  padding: 3rem 4rem 8rem 4rem;
   max-width: 1400px;
   margin: 0 auto;
   background: var(--white);
@@ -12,7 +12,6 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 2.5rem;
-  margin-top: 5rem;
 }
 
 .service-card {

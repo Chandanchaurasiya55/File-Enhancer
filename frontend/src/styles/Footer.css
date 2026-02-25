@@ -6,7 +6,7 @@ footer {
   max-width: 1600px;
   margin: 0 auto;
   border-top: 1px solid var(--border);
-  background: var(--white);
+  background: var(--accent);
 }
 
 .footer-grid {
@@ -17,15 +17,15 @@ footer {
 }
 
 .footer-brand {
-  font-size: 1.4rem;
-  font-weight: 700;
+  font-size: 2rem;
+  font-weight: 800;
   color: var(--text);
   margin-bottom: 1rem;
   letter-spacing: -0.01em;
 }
 
 .footer-desc {
-  color: var(--dark-gray);
+  color: var(--white);
   line-height: 1.7;
   margin-bottom: 1.5rem;
   font-size: 0.95rem;
@@ -62,7 +62,8 @@ footer {
 }
 
 .footer-section h4 {
-  font-size: 1rem;
+  font-size: 1.5rem;
+  font-weight: 700;
   color: var(--text);
   margin-bottom: 1.3rem;
   text-transform: capitalize;
@@ -79,7 +80,7 @@ footer {
 }
 
 .footer-section a {
-  color: var(--dark-gray);
+  color: var(--white);
   text-decoration: none;
   transition: all 0.3s ease;
   font-size: 0.9rem;
@@ -109,7 +110,7 @@ footer {
   text-align: center;
   padding-top: 2rem;
   border-top: 1px solid var(--border);
-  color: var(--dark-gray);
+  color: var(--white);
   font-size: 0.85rem;
 }
 
