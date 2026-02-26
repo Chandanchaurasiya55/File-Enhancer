@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate,Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import emojiIcon from "../assets/emoji.png";
+import emojiIcon from "../assets/emoji.webp";
 import "../styles/Navigation.css";
 
 const Navigation = () => {

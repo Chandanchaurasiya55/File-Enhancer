@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../styles/Auth.css';
-import emoji from '../assets/emoji.png';
+import emoji from '../assets/emoji.webp';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const AdminSignup = () => {
     const [adminExists, setAdminExists] = useState(null);
@@ -21,7 +23,7 @@ const AdminSignup = () => {
     useEffect(() => {
         const checkAdmin = async () => {
             try {
-                const response = await fetch('http://localhost:3000/api/auth/admin/check');
+                const response = await fetch(`${API_URL}/auth/admin/check`);
                 const data = await response.json();
                 setAdminExists(data.exists);
             } catch (err) {

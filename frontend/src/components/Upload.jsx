@@ -72,9 +72,9 @@ const Upload = ({ serviceId = null, operation = null }) => {
     ? servicesData.find(s => s.id === currentServiceId)
     : null;
 
-  // available individual formats for conversion service
-  const formatChoices = currentServiceId === 'format-conversion' && currentService
-    ? [...new Set(currentService.conversions.flatMap(c => c.split(' ↔ ').map(p => p.trim())))]
+  // available "from" formats for conversion service
+  const fromFormatChoices = currentServiceId === 'format-conversion' && currentService?.conversionMap
+    ? Object.keys(currentService.conversionMap)
     : [];
 
   // get user-friendly display name for a format code
@@ -85,19 +85,8 @@ const Upload = ({ serviceId = null, operation = null }) => {
 
   // get valid target formats based on selected source format
   const getValidTargetFormats = (sourceFormat) => {
-    if (!sourceFormat || !currentService?.conversions) return [];
-    
-    const validTargets = new Set();
-    currentService.conversions.forEach(conversion => {
-      const [from, to] = conversion.split(' ↔ ').map(p => p.trim());
-      if (from === sourceFormat) {
-        validTargets.add(to);
-      } else if (to === sourceFormat) {
-        validTargets.add(from);
-      }
-    });
-    
-    return Array.from(validTargets);
+    if (!sourceFormat || !currentService?.conversionMap) return [];
+    return currentService.conversionMap[sourceFormat] || [];
   };
 
   // reset combined format string and target format when user modifies source selection
@@ -150,15 +139,14 @@ const Upload = ({ serviceId = null, operation = null }) => {
           setError('❌ Source and target formats must differ.');
           return;
         }
-        // ensure the pair is supported (any direction)
-        const pair = `${selectedFrom} ↔ ${selectedTo}`;
-        const reversePair = `${selectedTo} ↔ ${selectedFrom}`;
-        if (!currentService.conversions.includes(pair) && !currentService.conversions.includes(reversePair)) {
+        // ensure the pair is supported using conversionMap
+        const validTargets = getValidTargetFormats(selectedFrom);
+        if (!validTargets.includes(selectedTo)) {
           setError('❌ This conversion combination is not supported.');
           return;
         }
         // Set the conversion pair as selectedFormat for the processFile function
-        setSelectedFormat(pair);
+        setSelectedFormat(`${selectedFrom} ↔ ${selectedTo}`);
       } else if (!selectedFormat) {
         setError('❌ Please pick a format first.');
         return;
@@ -593,7 +581,7 @@ const Upload = ({ serviceId = null, operation = null }) => {
                       onChange={e => setSelectedFrom(e.target.value)}
                     >
                       <option value="" disabled>-- choose source format --</option>
-                      {formatChoices.map(opt => <option key={opt} value={opt}>{getFormatDisplayName(opt)}</option>)}
+                      {fromFormatChoices.map(opt => <option key={opt} value={opt}>{getFormatDisplayName(opt)}</option>)}
                     </select>
                   </div>
 

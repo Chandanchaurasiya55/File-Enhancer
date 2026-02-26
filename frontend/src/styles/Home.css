@@ -60,13 +60,13 @@
 }
 
 .hero-description {
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: var(--dark-gray);
-  max-width: 600px;
-  margin: 1.5rem auto;
-  line-height: 1.7;
+  max-width: 700px;
+  margin: 1rem auto;
+  line-height: 1.6;
   animation: fadeIn 0.8s ease-out 0.5s both;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .hero-cta {

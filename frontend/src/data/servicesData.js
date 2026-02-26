@@ -49,30 +49,15 @@ export const servicesData = [
     description: 'Seamlessly convert between a wide variety of document and office file formats.',
     operation: 'convert',
     fullDescription: 'Select the conversion type you need, then upload your file to get it converted instantly.',
-    // Conversion pairs with actual format codes that backend understands
-    conversions: [
-      'pdf ↔ png',
-      'pdf ↔ jpg',
-      'docx ↔ pdf',
-      'docx ↔ html',
-      'docx ↔ txt',
-      'docx ↔ xml',
-      'pptx ↔ pdf',
-      'pptx ↔ html',
-      'pptx ↔ txt',
-      'pptx ↔ png',
-      'xlsx ↔ pdf',
-      'xlsx ↔ html',
-      'xlsx ↔ csv',
-      'xlsx ↔ txt',
-      'html ↔ pdf',
-      'html ↔ docx',
-      'html ↔ txt',
-      'html ↔ xml',
-      'xml ↔ html',
-      'xml ↔ txt',
-      'xml ↔ docx'
-    ],
+    // Conversion map: source format -> array of target formats
+    conversionMap: {
+      'pdf': ['docx', 'png', 'jpg'],
+      'docx': ['pdf', 'html', 'txt', 'xml'],
+      'pptx': ['pdf', 'html', 'txt', 'png'],
+      'xlsx': ['pdf', 'html', 'csv', 'txt'],
+      'html': ['pdf', 'docx', 'txt', 'xml'],
+      'xml': ['html', 'txt', 'docx']
+    },
     // Map format codes to user-friendly display names
     formatDisplayNames: {
       'pdf': 'PDF Document',
@@ -86,8 +71,8 @@ export const servicesData = [
       'png': 'PNG Image',
       'jpg': 'JPG Image'
     },
-    // Leave formats empty since selection is handled separately
-    formats: [],
+    // Available "from" formats
+    formats: ['pdf', 'docx', 'doc', 'pptx', 'xlsx', 'html', 'xml'],
     features: [
       'Convert PDF, Word, Excel, PowerPoint',
       'HTML, XML, and text conversions',

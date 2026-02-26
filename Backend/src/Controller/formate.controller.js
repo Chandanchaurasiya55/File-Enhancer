@@ -47,16 +47,16 @@ const getPandocPath = () => {
 // ─── Conversion Matrix (Defines which formats can be converted to which, and by which tool)
 // Defines which tool handles which conversion
 const conversionMatrix = {
-  pdf:  { targets: ["png", "jpg"],                          tool: "libreoffice" },  // PDF → image only (extract pages as images)
-  docx: { targets: ["pdf", "html", "txt", "xml"],           tool: "both" },
-  doc:  { targets: ["pdf", "docx", "html", "txt"],          tool: "libreoffice" },
-  pptx: { targets: ["pdf", "html", "txt", "png"],           tool: "libreoffice" },
-  ppt:  { targets: ["pdf", "pptx", "html", "txt"],          tool: "libreoffice" },
-  xlsx: { targets: ["pdf", "html", "csv", "txt"],           tool: "libreoffice" },
-  xls:  { targets: ["pdf", "xlsx", "html", "csv"],          tool: "libreoffice" },
-  html: { targets: ["pdf", "docx", "txt", "xml"],           tool: "both" },
-  htm:  { targets: ["pdf", "docx", "txt", "xml"],           tool: "both" },
-  xml:  { targets: ["html", "txt", "docx"],                 tool: "pandoc" },
+  pdf:  { targets: ["png", "jpg"], tool: "libreoffice" },  // PDF → image only (extract pages as images)
+  docx: { targets: ["pdf", "html", "txt", "xml"], tool: "both" },
+  doc:  { targets: ["pdf", "docx", "html", "txt"], tool: "libreoffice" },
+  pptx: { targets: ["pdf", "html", "txt", "png"], tool: "libreoffice" },
+  ppt:  { targets: ["pdf", "pptx", "html", "txt"], tool: "libreoffice" },
+  xlsx: { targets: ["pdf", "html", "csv", "txt"], tool: "libreoffice" },
+  xls:  { targets: ["pdf", "xlsx", "html", "csv"], tool: "libreoffice" },
+  html: { targets: ["pdf", "docx", "txt", "xml"], tool: "both" },
+  htm:  { targets: ["pdf", "docx", "txt", "xml"], tool: "both" },
+  xml:  { targets: ["html", "txt", "docx"], tool: "pandoc" },
 };
 
 // ─── Build Conversion Command Based on Source/Target and Available Tools 
@@ -100,7 +100,6 @@ const findOutputFile = (outDir, inputFilename, targetFormat) => {
       f.startsWith(baseName.substring(0, 5))
   );
   if (match) return path.join(outDir, match);
-
   return null;
 };
 

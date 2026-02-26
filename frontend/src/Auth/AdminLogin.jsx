@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../styles/Auth.css';
-import emoji from'../assets/emoji.png';
+import emoji from'../assets/emoji.webp';
 
 const AdminLogin = () => {
     const [formData, setFormData] = useState({

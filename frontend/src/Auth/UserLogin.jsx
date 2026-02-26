@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import emoji from '../assets/emoji.png';
+import emoji from '../assets/emoji.webp';
 import '../styles/Auth.css';
 
 const UserLogin = () => {
