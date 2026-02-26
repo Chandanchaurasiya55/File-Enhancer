@@ -5,33 +5,33 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
-import { AuthProvider } from "../src/context/AuthContext.jsx";
+import { AuthProvider } from "./context/AuthContext.jsx";
 import { useEffect } from "react";
 
 // Pages
-import Navigation from "../src/components/Navigation.jsx";
-import Home from "../src/components/Home.jsx";
-import Services from "../src/components/Services.jsx";
-import Features from "../src/components/Features.jsx";
-import Stats from "../src/components/Stats.jsx";
-import Premium from "../src/components/Premium.jsx";
-import Pricing from "../src/components/Pricing.jsx";
-import Studio from "../src/components/Studio.jsx";
-import Footer from "../src/components/Footer.jsx";
-import ServiceDetail from "../src/components/ServiceDetail.jsx";
-import Question from "../src/components/Question.jsx";
+import Navigation from "./components/Navigation.jsx";
+import Home from "./components/Home.jsx";
+import Services from "./components/Services.jsx";
+import Features from "./components/Features.jsx";
+import Stats from "./components/Stats.jsx";
+import Premium from "./components/Premium.jsx";
+import Pricing from "./components/Pricing.jsx";
+import Studio from "./components/Studio.jsx";
+import Footer from "./components/Footer.jsx";
+import ServiceDetail from "./components/ServiceDetail.jsx";
+import Question from "./components/Question.jsx";
 
 // Auth Pages
-import UserLogin from "../src/Auth/UserLogin.jsx";
-import UserSignup from "../src/Auth/UserSignup.jsx";
-import AdminLogin from "../src/Auth/AdminLogin.jsx";
-import AdminSignup from "../src/Auth/AdminSignup.jsx";
+import UserLogin from "./Auth/UserLogin.jsx";
+import UserSignup from "./Auth/UserSignup.jsx";
+import AdminLogin from "./Auth/AdminLogin.jsx";
+import AdminSignup from "./Auth/AdminSignup.jsx";
 
 // Dashboard Pages
-import UserDashboard from "../src/components/UserDashboard.jsx";
-import AdminDashboard from "../src/components/AdminDashboard.jsx";
-import UnauthorizedPage from "../src/components/UnauthorizedPage.jsx";
-import ProtectedRoute from "../src/components/ProtectedRoute.jsx";
+import UserDashboard from "./components/UserDashboard.jsx";
+import AdminDashboard from "./components/AdminDashboard.jsx";
+import UnauthorizedPage from "./components/UnauthorizedPage.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 import "./styles/index.css";
 
@@ -81,7 +81,7 @@ function App() {
           {/* Pricing Page */}
           <Route path="/pricing" element={<Pricing />} />
 
-          <Route path="/studio" element={<Stats />} />
+          <Route path="/stats" element={<Stats />} />
 
           {/* Service Detail Pages - Protected */}
           <Route
