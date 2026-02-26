@@ -5,33 +5,33 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider } from "./context/AuthContext.jsx";
 import { useEffect } from "react";
 
 // Pages
-import Navigation from "./components/Navigation";
-import Home from "./components/Home";
-import Services from "./components/Services";
-import Features from "./components/Features";
-import Stats from "./components/Stats";
-import Premium from "./components/Premium";
-import Pricing from "./components/Pricing";
-import Studio from "./components/studio";
-import Footer from "./components/Footer";
-import ServiceDetail from "./components/ServiceDetail";
-import Question from "./components/question";
+import Navigation from "./components/Navigation.jsx";
+import Home from "./components/Home.jsx";
+import Services from "./components/Services.jsx";
+import Features from "./components/Features.jsx";
+import Stats from "./components/Stats.jsx";
+import Premium from "./components/Premium.jsx";
+import Pricing from "./components/Pricing.jsx";
+import Studio from "./components/Studio.jsx";
+import Footer from "./components/Footer.jsx";
+import ServiceDetail from "./components/ServiceDetail.jsx";
+import Question from "./components/question.jsx";
 
 // Auth Pages
-import UserLogin from "./Auth/UserLogin";
-import UserSignup from "./Auth/UserSignup";
-import AdminLogin from "./Auth/AdminLogin";
-import AdminSignup from "./Auth/AdminSignup";
+import UserLogin from "./Auth/UserLogin.jsx";
+import UserSignup from "./Auth/UserSignup.jsx";
+import AdminLogin from "./Auth/AdminLogin.jsx";
+import AdminSignup from "./Auth/AdminSignup.jsx";
 
 // Dashboard Pages
-import UserDashboard from "./components/UserDashboard";
-import AdminDashboard from "./components/AdminDashboard";
-import UnauthorizedPage from "./components/UnauthorizedPage";
-import ProtectedRoute from "./components/ProtectedRoute";
+import UserDashboard from "./components/UserDashboard.jsx";
+import AdminDashboard from "./components/AdminDashboard.jsx";
+import UnauthorizedPage from "./components/UnauthorizedPage.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 import "./styles/index.css";
 
