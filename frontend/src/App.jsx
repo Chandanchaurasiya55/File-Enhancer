@@ -5,7 +5,7 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
-import { AuthProvider } from "../src/Auth/AuthContext.jsx";
+import { AuthProvider } from "../src/context/AuthContext.jsx";
 import { useEffect } from "react";
 
 // Pages
