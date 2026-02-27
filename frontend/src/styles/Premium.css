@@ -89,7 +89,7 @@
 }
 
 .premium-title {
-  font-size: 3.8rem;
+  font-size: 3rem;
   font-weight: 900;
   color: #1a1a1a;
   margin-bottom: 1.5rem;
@@ -318,7 +318,6 @@
   }
 
   .premium-container {
-    grid-template-columns: 1fr;
     gap: 3rem;
   }
 
@@ -347,7 +346,8 @@
   }
 
   .premium-container {
-    gap: 2rem;
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .premium-content {
@@ -355,7 +355,7 @@
   }
 
   .premium-title {
-    font-size: 2.3rem;
+    font-size: 2rem;
     margin-bottom: 1.5rem;
   }
 
@@ -422,18 +422,6 @@
   }
 
   .premium-image img {
-    max-width: 90%;
-  }
-
-  .floating-badge {
-    width: 45px;
-    height: 45px;
-    font-size: 1.2rem;
-  }
-
-  .premium-decoration-1,
-  .premium-decoration-2,
-  .premium-decoration-3 {
-    opacity: 0.05;
+   display: none;
   }
 }

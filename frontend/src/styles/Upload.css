@@ -711,379 +711,104 @@
 
 /* ==================== RESPONSIVE DESIGN ==================== */
 
-/* Tablet (1024px and below) */
+/* ==================== RESPONSIVE DESIGN ==================== */
+
+/* Tablet */
 @media (max-width: 1024px) {
   #upload {
     padding: 4rem 1.5rem 2rem;
   }
 
   .upload-container {
-    padding: 3rem 2rem;
-  }
-
-  .upload-icon {
-    font-size: 3.5rem;
-  }
-
-  .upload-content h2 {
-    font-size: 1.6rem;
-  }
-
-  .upload-btn {
-    padding: 0.95rem 2rem;
-    font-size: 0.95rem;
-  }
-
-  .file-stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .format-buttons {
-    gap: 0.8rem;
-  }
-
-  .format-btn {
-    padding: 0.8rem 1.4rem;
-    font-size: 0.9rem;
-  }
-
-  .feature-selection {
-    margin: 0 0 1.5rem 0;
-    padding: 1.2rem;
-  }
-
-  .feature-selection h3 {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .feature-subtitle {
-    font-size: 0.9rem;
-    margin-bottom: 1.2rem;
+    padding: 2rem 2rem;
   }
 
   .features-grid {
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.7rem;
-  }
-
-  .feature-card {
-    padding: 1rem;
-  }
-
-  .feature-icon {
-    font-size: 1.9rem;
-  }
-
-  .feature-card h4 {
-    font-size: 0.98rem;
-  }
-
-  .feature-card p {
-    font-size: 0.85rem;
   }
 }
 
-/* Mobile (768px and below) */
+/* Mobile */
 @media (max-width: 768px) {
   #upload {
     padding: 3rem 1rem 1.5rem;
   }
 
   .upload-container {
-    padding: 2rem 1.5rem;
+    padding: 1.5rem 1.2rem;
     border-radius: 16px;
   }
 
   .upload-icon {
-    font-size: 3rem;
-  }
-
-  .upload-content h2 {
-    font-size: 1.4rem;
-  }
-
-  .upload-content p {
-    font-size: 0.9rem;
-  }
-
-  .upload-btn {
-    padding: 0.9rem 1.8rem;
-    font-size: 0.9rem;
-  }
-
-  .format-message {
-    padding: 0.9rem 1.2rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .format-message p {
-    font-size: 0.9rem;
-  }
-
-  .upload-formats {
-    gap: 0.6rem;
-    margin-top: 1.5rem;
-  }
-
-  .format-badge {
-    padding: 0.5rem 1rem;
-    font-size: 0.8rem;
-  }
-
-  .processing-container {
-    padding: 1.5rem;
-  }
-
-  .spinner {
-    width: 40px;
-    height: 40px;
-    border-width: 3px;
-  }
-
-  .result-container {
-    padding: 2rem 1.5rem;
-    border-radius: 16px;
-  }
-
-  .success-icon {
-    font-size: 3rem;
-  }
-
-  .result-container h3 {
-    font-size: 1.4rem;
-  }
-
-  .file-stats {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .stat {
-    padding: 1.2rem;
-  }
-
-  .download-btn,
-  .process-again-btn {
-    display: block;
-    width: 100%;
-    padding: 0.95rem 1.5rem;
-    font-size: 0.9rem;
-    margin: 0.5rem 0;
-  }
-
-  .format-selection {
-    margin: 1.5rem 0;
-    padding: 1.5rem;
-  }
-
-  .format-selection h3 {
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-  }
-
-  .format-buttons {
-    gap: 0.6rem;
-  }
-
-  .format-btn {
-    padding: 0.7rem 1.2rem;
-    font-size: 0.85rem;
-  }
-
-  .feature-selection {
-    margin: 1.5rem 0;
-    padding: 1rem;
-  }
-
-  .feature-selection h3 {
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-  }
-
-  .feature-subtitle {
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-  }
-
-  .features-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.8rem;
-  }
-
-  .feature-card {
-    padding: 1rem;
-    gap: 0.6rem;
-  }
-
-  .feature-icon {
-    font-size: 1.8rem;
-  }
-
-  .feature-card h4 {
-    font-size: 0.95rem;
-  }
-
-  .feature-card p {
-    font-size: 0.8rem;
-  }
-}
-
-/* Small Mobile (480px and below) */
-@media (max-width: 480px) {
-  #upload {
-    padding: 2rem 0.75rem 1rem;
-  }
-
-  .upload-container {
-    padding: 1.5rem 1rem;
-    border-radius: 14px;
-  }
-
-  .upload-icon {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .upload-content h2 {
-    font-size: 1.2rem;
-  }
-
-  .upload-content p {
-    font-size: 0.85rem;
-  }
-
-  .upload-btn {
-    padding: 0.8rem 1.5rem;
-    font-size: 0.85rem;
-  }
-
-  .format-message {
-    padding: 0.8rem 1rem;
-    margin-bottom: 1rem;
-  }
-
-  .format-message p {
-    font-size: 0.85rem;
-  }
-
-  .upload-formats {
-    gap: 0.5rem;
-    margin-top: 1rem;
-  }
-
-  .format-badge {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.75rem;
-  }
-
-  .processing-container {
-    padding: 1.2rem;
-  }
-
-  .spinner {
-    width: 40px;
-    height: 40px;
-    border-width: 3px;
-    margin-bottom: 1rem;
-  }
-
-  .progress-bar {
-    margin-top: 1.2rem;
-  }
-
-  .progress-text {
-    margin-top: 1rem;
-    font-size: 0.85rem;
-  }
-
-  .result-container {
-    padding: 1.5rem 1rem;
-    border-radius: 14px;
-  }
-
-  .success-icon {
     font-size: 2.8rem;
   }
 
-  .result-container h3 {
-    font-size: 1.2rem;
+  .upload-icon h2 {
+    font-size: 1.6rem;
   }
 
+  .upload-content p {
+    font-size: 0.88rem;
+  }
+
+  .upload-btn {
+    padding: 0.85rem 1.8rem;
+    font-size: 0.9rem;
+  }
+
+  /* ✅ STATS ROW FIX */
   .file-stats {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: row;        /* ← row mein rakho */
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 0.8rem;
   }
 
   .stat {
+    flex: 1 1 120px;            /* ← side by side */
+    min-width: 100px;
     padding: 1rem;
   }
 
   .stat-label {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
   }
 
   .stat-value {
-    font-size: 1.3rem;
+    font-size: 1.1rem;
+  }
+
+  /* ✅ BUTTONS ROW FIX */
+  .result-container {
+    padding: 1.5rem 1rem;
   }
 
   .download-btn,
   .process-again-btn {
-    display: block;
-    width: 100%;
-    padding: 0.85rem 1.2rem;
-    font-size: 0.85rem;
-    margin: 0.4rem 0;
+    width: auto !important;     /* ← full width nahi */
+    flex: 1 1 auto;
+    padding: 0.9rem 1.5rem;
+    font-size: 0.88rem;
   }
 
-  .format-selection {
-    margin: 1rem 0;
-    padding: 1.2rem;
-  }
-
-  .format-selection h3 {
+  .format-message p {
     font-size: 1rem;
-    margin-bottom: 0.8rem;
   }
 
-  .format-buttons {
-    gap: 0.4rem;
-  }
-
-  .format-btn {
-    padding: 0.6rem 1rem;
-    font-size: 0.8rem;
-  }
-
-  .feature-selection {
-    margin: 1rem 0;
-    padding: 0.9rem;
-    border-radius: 12px;
-  }
-
-  .feature-selection h3 {
-    font-size: 1rem;
-    margin-bottom: 0.6rem;
-  }
-
-  .feature-subtitle {
-    font-size: 0.8rem;
-    margin-bottom: 0.8rem;
+  .format-badge {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.78rem;
   }
 
   .features-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 0.6rem;
   }
 
   .feature-card {
-    padding: 0.9rem;
+    padding: 0.8rem;
     gap: 0.5rem;
-  }
-
-  .feature-card input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
   }
 
   .feature-icon {
@@ -1096,6 +821,99 @@
 
   .feature-card p {
     font-size: 0.75rem;
-    line-height: 1.3;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  #upload {
+    padding: 2rem 0.75rem 1rem;
+  }
+
+  .upload-container {
+    padding: 1.2rem 1rem;
+    border-radius: 14px;
+  }
+
+  .upload-icon {
+    font-size: 2.2rem;
+  }
+
+  .upload-icon h2 {
+    font-size: 1.3rem;
+  }
+
+  .upload-content p {
+    font-size: 0.82rem;
+  }
+
+  .upload-btn {
+    padding: 0.75rem 1.4rem;
+    font-size: 0.85rem;
+  }
+
+  /* ✅ STATS ROW */
+  .file-stats {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .stat {
+    flex: 1 1 100px;
+    padding: 0.8rem;
+  }
+
+  .stat-label {
+    font-size: 0.6rem;
+  }
+
+  .stat-value {
+    font-size: 1rem;
+  }
+
+  /* ✅ BUTTONS ROW */
+  .download-btn,
+  .process-again-btn {
+    width: auto !important;
+    padding: 0.8rem 1.2rem;
+    font-size: 0.82rem;
+  }
+
+  .format-message p {
+    font-size: 0.9rem;
+  }
+
+  .format-badge {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.72rem;
+  }
+
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .feature-card {
+    padding: 0.7rem;
+    gap: 0.4rem;
+  }
+
+  .feature-icon {
+    font-size: 1.4rem;
+  }
+
+  .feature-card h4 {
+    font-size: 0.78rem;
+  }
+
+  .feature-card p {
+    font-size: 0.68rem;
+  }
+
+  .spinner {
+    width: 36px;
+    height: 36px;
+    border-width: 3px;
   }
 }

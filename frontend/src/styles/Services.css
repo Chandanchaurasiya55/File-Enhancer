@@ -14,6 +14,30 @@
   gap: 2.5rem;
 }
 
+/* Section Title */
+.section-title {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.section-title h2 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 1rem;
+  text-transform: capitalize;
+  letter-spacing: -0.02em;
+}
+
+.section-title p {
+  font-size: 1.1rem;
+  color: var(--dark-gray);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
 .service-card {
   background: var(--white);
   border: 1px solid var(--border);
@@ -143,65 +167,87 @@
 .service-card:nth-child(6) { animation-delay: 0.35s; }
 
 /* Responsive */
+/* Large Screens (4K / Big monitors) */
+@media (min-width: 1600px) {
+  .services {
+    max-width: 1600px;
+    padding: 4rem clamp(4rem, 6vw, 8rem);
+  }
+
+  .services-grid {
+    gap: 3rem;
+  }
+}
+
+
+/* Tablet Landscape */
 @media (max-width: 1024px) {
   .services {
-    padding: 6rem 2rem;
-  }
-
-  .services-grid {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
+    padding-inline: clamp(1rem, 4vw, 2rem);
   }
 }
 
+
+/* Tablet Portrait */
+@media (max-width: 900px) {
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
+/* Mobile Large */
 @media (max-width: 768px) {
   .services {
-    padding: 4rem 1.5rem;
-  }
-
-  .services-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
   }
 
   .service-card {
-    padding: 2rem;
+    border-radius: 10px;
   }
 
-  .service-icon {
-    font-size: 2.4rem;
-  }
-
-  .service-card h3 {
-    font-size: 1.3rem;
-  }
-
-  .service-card p {
-    font-size: 0.9rem;
+  .section-title h2{
+    font-size: 2rem;
   }
 }
 
-@media (max-width: 480px) {
-  .services {
-    padding: 3rem 1rem;
+
+/* Mobile Normal */
+@media (max-width: 600px) {
+  .services-grid {
+    grid-template-columns: 1fr;
   }
 
   .service-card {
-    padding: 1.5rem;
+    padding: 1.8rem;
+  }
+
+  .section-title h2{
+    font-size: 2rem;
+  }
+}
+
+
+/* Small Phones */
+@media (max-width: 380px) {
+  .services {
+    padding: 2.5rem 0.8rem;
+  }
+
+  .service-card {
+    padding: 1.3rem;
   }
 
   .service-icon {
-    font-size: 2rem;
-    margin-bottom: 1rem;
+    font-size: 1.8rem;
   }
 
   .service-card h3 {
-    font-size: 1.2rem;
-    margin-bottom: 0.8rem;
+    font-size: 1.1rem;
   }
 
   .service-card p {
-    font-size: 0.85rem;
-    margin-bottom: 1rem;
+    font-size: 0.82rem;
   }
 }
