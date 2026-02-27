@@ -14,7 +14,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: 'https://file-enhancer-frontend.vercel.app', // Update with your frontend URL
+    origin: 'http://localhost:5173', // Update with your frontend URL
     credentials: true
 }));
 
