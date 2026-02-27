@@ -1,45 +1,13 @@
-// const mongoose = require('mongoose');
-
-// let isConnected = false;
-
-// const connectDB = async () => {
-//     try {
-//         const mongoURI = process.env.MONGODB_URI;
-
-//         await mongoose.connect(mongoURI, {
-//             serverSelectionTimeoutMS: 5000,
-//             retryWrites: true,
-//         });
-        
-//         console.log('✅ MongoDB connected successfully');
-//         isConnected = true;
-//     } catch (err) {
-//         console.error('❌ MongoDB connection failed:', err);
-//         isConnected = false;
-//     }
-// };
-
-// // Check if database is connected
-// const isDBConnected = () => {
-//     return isConnected && mongoose.connection.readyState === 1;
-// };
-
-// module.exports = connectDB;
-// module.exports.isDBConnected = isDBConnected;
-
-
-
-
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+require('dotenv').config();
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URL, {
-    });
-    console.log("MongoDB connected successfully");
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log('MongoDB Connected Successfully ✅');
   } catch (error) {
-    console.error("MongoDB connection failed:", error);
-    process.exit(1); // Exit process with failure
+    console.error('MongoDB Connection Failed ❌', error.message);
+    process.exit(1);
   }
 };
 

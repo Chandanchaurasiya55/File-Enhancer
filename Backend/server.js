@@ -6,10 +6,12 @@ const { cleanupOldFiles } = require('./src/Controller/video.controller');
 const { cleanupConvertedFiles } = require('./src/Controller/formate.controller');
 
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 // Connect to database and start server
 connectDB();
+
+
 app.listen(PORT, () => {
     console.log(`🚀 Server is running on port ${PORT}`);
 
