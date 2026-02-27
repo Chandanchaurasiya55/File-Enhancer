@@ -12,10 +12,6 @@ const PORT = process.env.PORT || 3000;
 (async () => {
     try {
         console.log('\n🔄 Starting server...');
-        console.log(`📍 PORT: ${PORT}`);
-        console.log(`📦 MONGODB_URI: ${process.env.MONGODB_URI ? '✅ Configured' : '❌ Not set'}`);
-        console.log(`🔐 JWT_SECRET: ${process.env.JWT_SECRET ? '✅ Configured' : '❌ Not set'}`);
-        
         await connectDB();
     } catch (err) {
         console.error('Failed to connect to database:', err.message);
@@ -23,11 +19,11 @@ const PORT = process.env.PORT || 3000;
 
     app.listen(PORT, () => {
         console.log(`\n✅ Server running on http://localhost:${PORT}`);
-        console.log(`📤 Upload & Compress: POST http://localhost:${PORT}/api/video/compress`);
-        console.log(`📊 Status Check: GET http://localhost:${PORT}/api/video/status/:jobId`);
-        console.log(`⬇️   Download: GET http://localhost:${PORT}/api/video/download/:jobId`);
-        console.log(`🔑 User Login: POST http://localhost:${PORT}/api/auth/user/login`);
-        console.log(`👤 User Signup: POST http://localhost:${PORT}/api/auth/user/signup\n`);
+        // console.log(`📤 Upload & Compress: POST http://localhost:${PORT}/api/video/compress`);
+        // console.log(`📊 Status Check: GET http://localhost:${PORT}/api/video/status/:jobId`);
+        // console.log(`⬇️   Download: GET http://localhost:${PORT}/api/video/download/:jobId`);
+        // console.log(`🔑 User Login: POST http://localhost:${PORT}/api/auth/user/login`);
+        // console.log(`👤 User Signup: POST http://localhost:${PORT}/api/auth/user/signup\n`);
     });
 
     // Auto cleanup old files every 30 minutes

@@ -19,7 +19,7 @@ import Pricing from "./components/Pricing.jsx";
 import Studio from "./components/Studio.jsx";
 import Footer from "./components/Footer.jsx";
 import ServiceDetail from "./components/ServiceDetail.jsx";
-
+import Queary from "./components/Queary.jsx";
 
 // Auth Pages
 import UserLogin from "./Auth/UserLogin.jsx";
@@ -44,6 +44,7 @@ function LandingPage() {
       <Features />
       <Premium />
       <Stats />
+      <Queary />
     </>
   );
 }
