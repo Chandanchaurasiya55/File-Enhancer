@@ -19,7 +19,9 @@ import Pricing from "./components/Pricing.jsx";
 import Studio from "./components/Studio.jsx";
 import Footer from "./components/Footer.jsx";
 import ServiceDetail from "./components/ServiceDetail.jsx";
+import Upload from "./components/Upload.jsx";
 import Queary from "./components/Queary.jsx";
+import MouseMovingEffect from "./components/MouseMovingEffect.jsx";
 
 // Auth Pages
 import UserLogin from "./Auth/UserLogin.jsx";
@@ -67,6 +69,7 @@ function App() {
   return (
     <Router>
       <AuthProvider>
+        <MouseMovingEffect />
         <ScrollToTop />
         <Navigation />
         <Routes>
@@ -89,6 +92,16 @@ function App() {
             element={
               <ProtectedRoute requiredRole="user">
                 <ServiceDetail />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Upload Pages - Protected */}
+          <Route
+            path="/upload/:serviceId"
+            element={
+              <ProtectedRoute requiredRole="user">
+                <Upload />
               </ProtectedRoute>
             }
           />

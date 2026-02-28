@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/Studio.css";
-import Services from "./Services";
 
 // ── SVG Icons ──────────────────────────────────────────────────────────────────
 
@@ -153,6 +153,7 @@ const TABS = ["Trending Projects", "Recent Projects"];
 // ── Component ─────────────────────────────────────────────────────────────────
 
 function Studio() {
+  const navigate = useNavigate();
   const [activeNav,   setActiveNav]   = useState("home");
   const [activeTool,  setActiveTool]  = useState("general");
   const [inputVal,    setInputVal]    = useState("");
@@ -292,6 +293,41 @@ function Studio() {
                 <span className="tool-label">{tool.label}</span>
                 {activeTool === tool.id && <span className="active-bar" />}
               </button>
+            ))}
+          </div>
+          <div className="studio-services-row">
+            {/* Only show the three main services in a row */}
+            {[
+              {
+                id: 'video-compression',
+                icon: '🎬',
+                title: 'Video Compression',
+                description: 'Reduce file sizes by up to 95% without sacrificing visual fidelity.',
+              },
+              {
+                id: 'ai-enhancement',
+                icon: '✨',
+                title: 'AI Enhancement',
+                description: 'Neural network-powered upscaling, noise reduction, and color grading.',
+              },
+              {
+                id: 'format-conversion',
+                icon: '⚡',
+                title: 'Format Conversion',
+                description: 'Seamlessly convert between a wide variety of formats.',
+              },
+            ].map((service) => (
+              <div key={service.id} className="studio-service-card">
+                <div className="studio-service-icon">{service.icon}</div>
+                <h3 className="studio-service-title">{service.title}</h3>
+                <p className="studio-service-desc">{service.description}</p>
+                <button 
+                  className="studio-service-btn"
+                  onClick={() => navigate(`/upload/${service.id}`)}
+                >
+                  Try Now
+                </button>
+              </div>
             ))}
           </div>
         </div>
