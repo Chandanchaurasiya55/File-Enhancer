@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import "../styles/Studio.css";
+import Services from "./Services";
 
-// ── SVG Icons 
+// ── SVG Icons ──────────────────────────────────────────────────────────────────
 
 function HomeIcon() {
   return (
@@ -106,6 +107,25 @@ function ColorGridIcon() {
   );
 }
 
+// Three Dots (vertical) Icon — open hone pe X ban jaata hai
+function DotsIcon({ open }) {
+  if (open) {
+    return (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    );
+  }
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+      <circle cx="12" cy="5"  r="1.8" />
+      <circle cx="12" cy="12" r="1.8" />
+      <circle cx="12" cy="19" r="1.8" />
+    </svg>
+  );
+}
+
 // ── Data ──────────────────────────────────────────────────────────────────────
 
 const NAV_ITEMS = [
@@ -130,11 +150,13 @@ const TOOLS = [
 
 const TABS = ["Trending Projects", "Recent Projects"];
 
-// ── Component 
+// ── Component ─────────────────────────────────────────────────────────────────
+
 function Studio() {
-  const [activeNav,  setActiveNav]  = useState("home");
-  const [activeTool, setActiveTool] = useState("general");
-  const [inputVal,   setInputVal]   = useState("");
+  const [activeNav,   setActiveNav]   = useState("home");
+  const [activeTool,  setActiveTool]  = useState("general");
+  const [inputVal,    setInputVal]    = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const textareaRef = useRef(null);
 
   // Auto-grow textarea
@@ -144,17 +166,53 @@ function Studio() {
     textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
   }, [inputVal]);
 
+  // Body scroll lock jab sidebar open ho mobile pe
+  useEffect(() => {
+    if (sidebarOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [sidebarOpen]);
+
+  const closeSidebar = () => setSidebarOpen(false);
+
+  const handleNavClick = (id) => {
+    setActiveNav(id);
+    closeSidebar(); // nav item click pe sidebar band
+  };
+
   return (
+    <>
     <div className="studio-root">
 
+      {/* ── Hamburger Toggle Button (sirf mobile pe visible) ── */}
+      <button
+        className="sidebar-toggle"
+        aria-label={sidebarOpen ? "Close menu" : "Open menu"}
+        onClick={() => setSidebarOpen((prev) => !prev)}
+      >
+        <DotsIcon open={sidebarOpen} />
+      </button>
+
+      {/* ── Overlay (mobile drawer ke peeche) ── */}
+      {sidebarOpen && (
+        <div
+          className="sidebar-overlay active"
+          onClick={closeSidebar}
+          aria-hidden="true"
+        />
+      )}
+
       {/* ────── Sidebar ────── */}
-      <aside className="sidebar">
+      <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <nav className="sidebar-nav">
           {NAV_ITEMS.map((item) => (
             <button
               key={item.id}
               className={`nav-item ${activeNav === item.id ? "nav-active" : ""}`}
-              onClick={() => setActiveNav(item.id)}
+              onClick={() => handleNavClick(item.id)}
             >
               <span className="nav-icon">{item.icon}</span>
               <span className="nav-label">{item.label}</span>
@@ -181,7 +239,9 @@ function Studio() {
                 <span className="agent-icon-box"><AgentIcon /></span>
                 <span className="agent-word">Agent</span>
                 <span className="agent-pipe">|</span>
-                <span className="agent-mode">General</span>
+                <span className="agent-mode">
+                  {TOOLS.find((t) => t.id === activeTool)?.label ?? "General"}
+                </span>
               </div>
               <textarea
                 ref={textareaRef}
@@ -223,9 +283,9 @@ function Studio() {
                 style={{ animationDelay: `${i * 55}ms` }}
               >
                 <div className={`tool-icon ${tool.cls}`}>
-                  {tool.type === "star" && <span className="icon-star">✦</span>}
+                  {tool.type === "star"  && <span className="icon-star">✦</span>}
                   {tool.type === "emoji" && <span className="icon-emoji">{tool.emoji}</span>}
-                  {tool.type === "grid" && <ColorGridIcon />}
+                  {tool.type === "grid"  && <ColorGridIcon />}
                   {tool.badge  && <span className="badge-new">{tool.badge}</span>}
                   {tool.clover && <span className="badge-clover">👑</span>}
                 </div>
@@ -233,14 +293,15 @@ function Studio() {
                 {activeTool === tool.id && <span className="active-bar" />}
               </button>
             ))}
-
-            <services />
           </div>
         </div>
+
       </main>
+      
     </div>
+   
+    </>
   );
 }
-
 
 export default Studio;
