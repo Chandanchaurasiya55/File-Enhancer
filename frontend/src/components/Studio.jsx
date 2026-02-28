@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import "../styles/Studio.css";
 
-// ── SVG Icons ─────────────────────────────────────────────────────────────────
+// ── SVG Icons 
 
 function HomeIcon() {
   return (

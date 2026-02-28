@@ -92,7 +92,8 @@
 @media (max-width: 768px) {
 
   .hero {
-    padding: 5rem 1.5rem 2rem;
+    min-height: 80vh;
+    padding: 1rem;
   }
 
   /* buttons still row */
@@ -101,7 +102,7 @@
   }
 
   .hero h2 {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
   }
 }
 
@@ -109,7 +110,7 @@
 @media (max-width: 480px) {
 
   .hero {
-    padding: 3rem 1rem 1.5rem;
+    padding: 1rem;
   }
 
   .hero h2 {
